@@ -11,9 +11,10 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
 }) => {
   return (
-    <button className={`btn ${className}`} onClick={onClick}>
+    <button className={`${className}`} onClick={onClick}>
       {children}
     </button>
   );
 };
 export default Button;
+   

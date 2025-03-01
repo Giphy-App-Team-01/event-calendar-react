@@ -10,25 +10,115 @@ import CreateEvent from './views/CreateEvent/CreateEvent';
 import SingleEventView from './views/SingleEventView/SingleEventView';
 import MyContacts from './views/MyContacts/MyContacts';
 import AdminDashboard from './views/AdminDashboard/AdminDashboard';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, db } from '../firebase.config';
+import { onValue, ref } from 'firebase/database';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { AppContext } from './context/app.context';
+import { ToastContainer } from 'react-toastify';
+
+interface FirebaseUser {
+  [key: string]: any; // Generalized structure for auth user
+}
+
+interface DbUser {
+  [key: string]: any; // Generalized structure for DB user
+}
+
+interface AppState {
+  authUser: FirebaseUser | null;
+  dbUser: DbUser | null;
+  loading: boolean;
+}
+
+interface AppContextType extends AppState {
+  setAppState: Dispatch<SetStateAction<AppState>>;
+}
+
 const App: React.FC = () => {
+  const [appState, setAppState] = useState<AppState>({
+    authUser: null, // From Firebase Authentication
+    dbUser: null, // From Firestore Database
+    loading: true, // Flag for loading user data
+  });
+
+
+  const [user, loading, error] = useAuthState(auth);
+
+
+    // Update the app state when the user changes
+    useEffect(() => {
+      if (user && user.uid !== appState.authUser?.uid) {
+        setAppState((prevState) => ({
+          ...prevState,
+          authUser: user,
+        }));
+      } else if (!user) {
+        setAppState((prevState) => ({
+          ...prevState,
+          authUser: null,
+          dbUser: null,
+        }));
+      }
+    }, [user]);
+
+    // Update loading state separately
+  useEffect(() => {
+    setAppState((prevState) => ({
+      ...prevState,
+      loading,
+    }));
+  }, [loading]);
+
+    // Fetch user data only after Firebase authentication is fully loaded + onValue listener for real-time updates
+    useEffect(() => {
+      if (!user || loading) return;
+  
+      const userRef = ref(db, `users/${user.uid}`);
+  
+      const unsubscribe = onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setAppState((prevState) => ({
+            ...prevState,
+            dbUser: snapshot.val(),
+          }));
+        }
+      });
+  
+      return () => unsubscribe(); // Detach the listener
+    }, [user, loading]);
+
+    if (appState.loading) {
+      return <div>Loading...</div>;
+    }
+  
+    if (error) {
+      return <div>Error</div>;  
+      
+    }
+
   return (
+    <AppContext.Provider value={{ ...appState, setAppState } as AppContextType }>
     <BrowserRouter>
-      <Container className='p-6'>
         <Header />
+        <Container className="p-6 bg-gray-100">
+          <ToastContainer />
         <Routes>
-          <Route index path='/' element={<LandingPage />} />
-          <Route path='/my-calendar' element={<MyCalendar />} />
-          <Route path='/user/:id' element={<UserProfile />} />
-          <Route path='/my-contacts/:id' element={<MyContacts />} />
-          <Route path='*' element={<NotFound />} />
-          <Route path='/event/:id' element={<SingleEventView />} />
-          <Route path='/create-event' element={<CreateEvent />} />
-          <Route path='/admin-board' element={<AdminDashboard />} />
+          <Route index path="/" element={<LandingPage />} />
+          <Route path="/my-calendar" element={<MyCalendar />} />
+          <Route path="/user/:id" element={<UserProfile />} />
+          <Route path="/my-contacts/:id" element={<MyContacts />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/event/:id" element={<SingleEventView />} />
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/admin-board" element={<AdminDashboard />} />
         </Routes>
 
-        <Footer />
+       
       </Container>
+      <Footer />
     </BrowserRouter>
+    </AppContext.Provider>
   );
 };
 
