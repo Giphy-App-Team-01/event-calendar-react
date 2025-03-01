@@ -1,0 +1,1 @@
+import './SingleContactItemList.css';

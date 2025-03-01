@@ -1,0 +1,1 @@
+import './SingleEventItemCard.css';
