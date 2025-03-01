@@ -1,0 +1,89 @@
+import { get, ref, set } from "firebase/database";
+import { db } from "../../firebase.config";
+
+interface databaseUser {
+  username: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  address: string;
+  email: string;
+  image: string;
+  allowEventInvites: boolean;
+  uid: string;
+}
+
+
+
+export const saveUserToDatabase = async (
+  uid: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  address: string,
+  email: string,
+  username: string,
+  image: string
+) => {
+  if (!uid || !firstName || !lastName || !phoneNumber || !address || !email || !username || !image) {
+    throw new Error("All fields are required");
+  }
+
+  const userRef = ref(db, `users/${uid}`);
+  const userData = {
+    uid,
+    firstName,
+    lastName,
+    phoneNumber,
+    address,
+    email,
+    username,
+    image,
+    allowEventInvites: true,
+  };
+
+  try {
+    await set(userRef, userData);
+    console.log("User saved successfully");
+  } catch (error) {
+    console.error("Error saving user to database:", error);
+    throw error;
+  }
+};
+
+export const getAllUserEmails = async () => {
+    try {
+      const snapshot = await get(ref(db, 'users'));
+  
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        const emails = Object.values(users as Record<string, databaseUser>).map((user) => user.email);
+        return emails;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching user emails:', error);
+      return [];
+    }
+  };
+
+  export const getAllUsernames = async (): Promise<string[]> => {
+
+
+  
+    try {
+      const snapshot = await get(ref(db, "users"));
+  
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        const usernames = Object.values(users as Record<string, databaseUser>).map(
+          (user) => user.username
+        );
+        return usernames;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching user usernames:", error);
+      return [];
+    }
+  };
