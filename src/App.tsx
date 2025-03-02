@@ -16,6 +16,7 @@ import { onValue, ref } from 'firebase/database';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { AppContext } from './context/app.context';
 import { ToastContainer } from 'react-toastify';
+import AuthGuard from './hoc/AuthGuard';
 
 interface FirebaseUser {
   [key: string]: any; // Generalized structure for auth user
@@ -105,13 +106,13 @@ const App: React.FC = () => {
           <ToastContainer />
         <Routes>
           <Route index path="/" element={<LandingPage />} />
-          <Route path="/my-calendar" element={<MyCalendar />} />
-          <Route path="/user/:id" element={<UserProfile />} />
-          <Route path="/my-contacts/:id" element={<MyContacts />} />
+          <Route path="/my-calendar" element={<AuthGuard><MyCalendar /></AuthGuard>} /> 
+          <Route path="/user/:id" element={<AuthGuard><UserProfile /></AuthGuard>} />
+          <Route path="/my-contacts/:id" element={<AuthGuard><MyContacts /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
           <Route path="/event/:id" element={<SingleEventView />} />
-          <Route path="/create-event" element={<CreateEvent />} />
-          <Route path="/admin-board" element={<AdminDashboard />} />
+          <Route path="/create-event" element={<AuthGuard><CreateEvent /></AuthGuard>} />
+          <Route path="/admin-board" element={<AuthGuard><AdminDashboard /></AuthGuard>} />
         </Routes>
 
        
