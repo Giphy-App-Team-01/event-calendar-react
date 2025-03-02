@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           {authUser && (
             <ul className="hidden md:flex space-x-6 text-white font-medium">
               <li><Link to="/my-calendar" className="hover:text-teal-700 transition">My Calendar</Link></li>
-              <li><Link to="/user/profile" className="hover:text-teal-700 transition">Profile</Link></li>
+              <li><Link to={`/user/${authUser.uid}`} className="hover:text-teal-700 transition">Profile</Link></li>
               <li><Link to={`/my-contacts/${authUser.uid}`} className="hover:text-teal-700 transition">Contacts</Link></li>
               <li><Link to="/create-event" className="hover:text-teal-700 transition">Create Event</Link></li>
               <li><Link to="/admin-board" className="hover:text-teal-700 transition">Admin Dashboard</Link></li>
@@ -51,7 +51,7 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-6">
           {authUser ? (
             <>
-              <SearchBar placeholder="Search..." onChange={console.log} className="hidden md:block" />
+              <SearchBar className="hidden md:block" />
               <Button onClick={handleLogout} className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-md transition">
                 Logout
               </Button>
