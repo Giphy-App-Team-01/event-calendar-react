@@ -1,7 +1,7 @@
 import { get, ref, set } from "firebase/database";
 import { db } from "../../firebase.config";
 
-interface databaseUser {
+export interface databaseUser {
   username: string;
   firstName: string;
   lastName: string;
@@ -87,3 +87,16 @@ export const getAllUserEmails = async () => {
       return [];
     }
   };
+
+  export const getAllUsers = async (): Promise<databaseUser[]> => {
+  try {
+    const snapshot = await get(ref(db, "users"));
+    if (snapshot.exists()) {
+      return Object.values(snapshot.val()) as databaseUser[];
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+};
