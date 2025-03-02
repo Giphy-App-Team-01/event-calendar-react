@@ -1,3 +1,9 @@
+interface SearchBarProps {
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  className?: string;
+}
+
 const SearchBar: React.FC<SearchBarProps> = ({
   onChange,
   placeholder = 'Search...',

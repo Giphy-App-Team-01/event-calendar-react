@@ -9,7 +9,7 @@ export const MIN_PHONE_NUMBER_LENGTH: number = 10;
 export const MIN_CONTACTS_LIST_TITLE_LENGTH: number = 3;
 export const MAX_CONTACTS_LIST_TITLE_LENGTH: number = 30;
 export const MIN_ADDRESS_LENGTH: number = 5;
-export const MAX_ADDRESS_LENGTH: number = 20;
+export const MAX_ADDRESS_LENGTH: number = 40;
 
 // Event specific
 export const MIN_TITLE_LENGTH: number = 3;
