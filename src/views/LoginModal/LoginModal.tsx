@@ -27,10 +27,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       toast.success('Login successful',{
         autoClose: 1000
       });
-      setTimeout(() => {
-        navigate('/my-calendar');
-        onClose();
-      }, 1000);
+      onClose();
+      navigate('/my-calendar');
     } catch (error) {
       console.log(error);
     } finally {
@@ -85,7 +83,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               </Button>
             </div>
 
-            <Button className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md 
+            <Button type='submit' className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md 
              bg-blue-500 hover:bg-blue-600 transition-all text-white
             ">{loading ? 'Loading...' : 'Login' }
             </Button>

@@ -46,9 +46,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     try {
       validateFirstAndLastName(formData.firstName, formData.lastName);
-      validateUsername(formData.username);
+      await validateUsername(formData.username);
       validatePhoneNumber(formData.phoneNumber);
-      validateEmail(formData.email);
+      await validateEmail(formData.email);
       validatePassword(formData.password);
       validatePasswordsMatch(formData.password, formData.confirmPassword);
       validateAddress(formData.address);
@@ -70,10 +70,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
       toast.success("Registration successful",{
         autoClose: 1000
       });
-      setTimeout(() => {
-        navigate("/my-calendar");
-        onClose();
-      }, 1000);
+      onClose();
+      navigate("/my-calendar");
     } catch (error) {
       toast.error((error as Error).message,{
         autoClose:2000,
@@ -132,7 +130,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               </div>
             ))}
           </div>
-          <Button className="btn w-full text-lg font-medium rounded-lg shadow-md bg-blue-400 hover:bg-blue-500 transition-all text-white">
+          <Button type="submit" className="btn w-full text-lg font-medium rounded-lg shadow-md bg-blue-400 hover:bg-blue-500 transition-all text-white">
             {loading ? "Loading..." : "Register"}
           </Button>
         </form>

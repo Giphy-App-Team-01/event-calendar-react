@@ -53,6 +53,8 @@ export const validatePhoneNumber = (phoneNumber: string) => {
 
 export const validateEmail = async (email: string) => {
   const existingEmails = await getAllUserEmails();
+  console.log(existingEmails);
+  
 
   if (existingEmails.includes(email)) {
     throw new Error('Email already exists');
