@@ -42,6 +42,8 @@ const App: React.FC = () => {
     dbUser: null, // From Firestore Database
     loading: true, // Flag for loading user data
   });
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   const [user, loading, error] = useAuthState(auth);
 
@@ -98,11 +100,25 @@ const App: React.FC = () => {
   return (
     <AppContext.Provider value={{ ...appState, setAppState } as AppContextType}>
       <BrowserRouter>
-        <Header />
-        <Container className='bg-gray-100'>
+        <Header
+          isLoginOpen={isLoginOpen}
+          setIsLoginOpen={setIsLoginOpen}
+          isRegisterOpen={isRegisterOpen}
+          setIsRegisterOpen={setIsRegisterOpen}
+        />
+        <Container className='bg-gray-100 py-8'>
           <ToastContainer />
           <Routes>
-            <Route index path='/' element={<LandingPage />} />
+            <Route
+              index
+              path='/'
+              element={
+                <LandingPage
+                  setIsLoginOpen={setIsLoginOpen}
+                  setIsRegisterOpen={setIsRegisterOpen}
+                />
+              }
+            />
             <Route
               path='/my-calendar'
               element={

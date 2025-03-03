@@ -1,17 +1,26 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../Button/Button';
 import SearchBar from '../SearchBar/SearchBar';
-import { useContext, useState } from 'react';
+import { useContext, Dispatch, SetStateAction } from 'react';
 import LoginModal from '../../views/LoginModal/LoginModal';
 import RegisterModal from '../../views/RegisterModal/RegisterModal';
 import { logoutUser } from '../../services/auth-service';
 import { AppContext } from '../../context/app.context';
 import { toast } from 'react-toastify';
 import Container from '../Container/Container';
+interface HeaderProps {
+  isLoginOpen: boolean;
+  setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
+  isRegisterOpen: boolean;
+  setIsRegisterOpen: Dispatch<SetStateAction<boolean>>;
+}
 
-const Header: React.FC = () => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+const Header: React.FC<HeaderProps> = ({
+  isLoginOpen,
+  setIsLoginOpen,
+  isRegisterOpen,
+  setIsRegisterOpen,
+}) => {
   const navigate = useNavigate();
   const { authUser } = useContext(AppContext) as {
     authUser: { uid: string } | null;
@@ -93,7 +102,7 @@ const Header: React.FC = () => {
                 <SearchBar className='hidden md:block' />
                 <Button
                   onClick={handleLogout}
-                  className='bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-md transition'
+                  className='bg-red-400 hover:bg-red-500 text-white'
                 >
                   Logout
                 </Button>
@@ -102,13 +111,13 @@ const Header: React.FC = () => {
               <div className='flex items-center gap-4'>
                 <Button
                   onClick={() => setIsLoginOpen(true)}
-                  className='bg-cyan-500 hover:bg-cyan-600 text-white font-semibold px-5 py-2 rounded-md transition'
+                  className='bg-cyan-500 hover:bg-cyan-600 text-white'
                 >
                   Sign in
                 </Button>
                 <Button
                   onClick={() => setIsRegisterOpen(true)}
-                  className='bg-white text-gray-900 font-semibold px-5 py-2 rounded-md transition hover:bg-gray-200'
+                  className='bg-white text-gray-900 hover:bg-gray-200'
                 >
                   Register
                 </Button>
