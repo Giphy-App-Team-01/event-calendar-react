@@ -43,27 +43,25 @@ const App: React.FC = () => {
     loading: true, // Flag for loading user data
   });
 
-
   const [user, loading, error] = useAuthState(auth);
 
+  // Update the app state when the user changes
+  useEffect(() => {
+    if (user && user.uid !== appState.authUser?.uid) {
+      setAppState((prevState) => ({
+        ...prevState,
+        authUser: user,
+      }));
+    } else if (!user) {
+      setAppState((prevState) => ({
+        ...prevState,
+        authUser: null,
+        dbUser: null,
+      }));
+    }
+  }, [user]);
 
-    // Update the app state when the user changes
-    useEffect(() => {
-      if (user && user.uid !== appState.authUser?.uid) {
-        setAppState((prevState) => ({
-          ...prevState,
-          authUser: user,
-        }));
-      } else if (!user) {
-        setAppState((prevState) => ({
-          ...prevState,
-          authUser: null,
-          dbUser: null,
-        }));
-      }
-    }, [user]);
-
-    // Update loading state separately
+  // Update loading state separately
   useEffect(() => {
     setAppState((prevState) => ({
       ...prevState,
@@ -71,54 +69,86 @@ const App: React.FC = () => {
     }));
   }, [loading]);
 
-    // Fetch user data only after Firebase authentication is fully loaded + onValue listener for real-time updates
-    useEffect(() => {
-      if (!user || loading) return;
-  
-      const userRef = ref(db, `users/${user.uid}`);
-  
-      const unsubscribe = onValue(userRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setAppState((prevState) => ({
-            ...prevState,
-            dbUser: snapshot.val(),
-          }));
-        }
-      });
-  
-      return () => unsubscribe(); // Detach the listener
-    }, [user, loading]);
+  // Fetch user data only after Firebase authentication is fully loaded + onValue listener for real-time updates
+  useEffect(() => {
+    if (!user || loading) return;
 
-    if (appState.loading) {
-      return <div>Loading...</div>;
-    }
-  
-    if (error) {
-      return <div>Error</div>;  
-      
-    }
+    const userRef = ref(db, `users/${user.uid}`);
+
+    const unsubscribe = onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setAppState((prevState) => ({
+          ...prevState,
+          dbUser: snapshot.val(),
+        }));
+      }
+    });
+
+    return () => unsubscribe(); // Detach the listener
+  }, [user, loading]);
+
+  if (appState.loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error</div>;
+  }
 
   return (
-    <AppContext.Provider value={{ ...appState, setAppState } as AppContextType }>
-    <BrowserRouter>
+    <AppContext.Provider value={{ ...appState, setAppState } as AppContextType}>
+      <BrowserRouter>
         <Header />
-        <Container className="p-6 bg-gray-100">
+        <Container className='bg-gray-100'>
           <ToastContainer />
-        <Routes>
-          <Route index path="/" element={<LandingPage />} />
-          <Route path="/my-calendar" element={<AuthGuard><MyCalendar /></AuthGuard>} /> 
-          <Route path="/user/:id" element={<AuthGuard><UserProfile /></AuthGuard>} />
-          <Route path="/my-contacts/:id" element={<AuthGuard><MyContacts /></AuthGuard>} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/event/:id" element={<SingleEventView />} />
-          <Route path="/create-event" element={<AuthGuard><CreateEvent /></AuthGuard>} />
-          <Route path="/admin-board" element={<AuthGuard><AdminDashboard /></AuthGuard>} />
-        </Routes>
-
-       
-      </Container>
-      <Footer />
-    </BrowserRouter>
+          <Routes>
+            <Route index path='/' element={<LandingPage />} />
+            <Route
+              path='/my-calendar'
+              element={
+                <AuthGuard>
+                  <MyCalendar />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path='/user/:id'
+              element={
+                <AuthGuard>
+                  <UserProfile />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path='/my-contacts/:id'
+              element={
+                <AuthGuard>
+                  <MyContacts />
+                </AuthGuard>
+              }
+            />
+            <Route path='*' element={<NotFound />} />
+            <Route path='/event/:id' element={<SingleEventView />} />
+            <Route
+              path='/create-event'
+              element={
+                <AuthGuard>
+                  <CreateEvent />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path='/admin-board'
+              element={
+                <AuthGuard>
+                  <AdminDashboard />
+                </AuthGuard>
+              }
+            />
+          </Routes>
+        </Container>
+        <Footer />
+      </BrowserRouter>
     </AppContext.Provider>
   );
 };

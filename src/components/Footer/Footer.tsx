@@ -1,13 +1,17 @@
 import React from 'react';
 import './Footer.css';
+import Container from '../Container/Container';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-gray-800 text-white py-6 text-center text-sm">
-      <div className="container mx-auto flex flex-col justify-center items-center px-6 text-center">
-        <p>&copy; {new Date().getFullYear()} MyApp. All rights reserved.</p>
-      </div>
-    </footer>
+    <Container className='bg-gray-800 py-6 text-center text-m text-white'>
+      <footer>
+        <p>
+          &copy; {new Date().getFullYear()} Event Calendar React App. All rights
+          reserved.
+        </p>
+      </footer>
+    </Container>
   );
 };
 
