@@ -16,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       type={type}
-      className={`font-semibold px-5 py-2 rounded-md cursor-pointer transition ${className}`}
+      className={`font-semibold px-5 py-2 rounded-md transition ${className}`}
       onClick={onClick}
     >
       {children}
