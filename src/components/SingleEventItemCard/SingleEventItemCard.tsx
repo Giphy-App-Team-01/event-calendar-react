@@ -1,22 +1,26 @@
-import './SingleEventItemCard.css';
+import React from "react";
+import "./SingleEventItemCard.css";
 
-interface Props {
+interface EventProps {
   event: {
-    name: string;
-    date: string;
-    time: string;
+    title: string;
+    start: string;
+    end: string;
     location: string;
+    image?: string;
   };
-}
+} 
 
-const SingleEventItemCard = ({ event }: Props) => {
+const SingleEventItemCard: React.FC<EventProps> = ({ event }) => {
   return (
-    <div className='single-event-item-card'>
-      <h1>{event.name}</h1>
-      <div className='single-event-item-card__info'>
-        <p>{event.date}</p>
-        <p>{event.time}</p>
-        <p>{event.location}</p>
+    <div className="single-event-item-card bg-white shadow-md rounded-lg overflow-hidden">
+      {event.image && (
+        <img src={event.image} alt={event.title} className="w-full h-32 object-cover" />
+      )}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+        <p className="text-gray-700">🕒 {event.start} - {event.end}</p>
+        <p className="text-gray-700">📍 {event.location}</p>
       </div>
     </div>
   );
