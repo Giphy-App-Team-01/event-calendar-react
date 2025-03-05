@@ -42,7 +42,7 @@ const LandingPage: React.FC<HeaderProps> = ({
           <div className='flex items-center gap-4 mt-6'>
             <Button
               onClick={() => setIsLoginOpen(true)}
-              className='bg-cyan-500 hover:bg-cyan-600 text-white transition'
+              className='bg-cyan-500 hover:bg-cyan-600 text-white'
             >
               Sign in
             </Button>
