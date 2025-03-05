@@ -1,5 +1,5 @@
 import { endOfDay, startOfDay } from 'date-fns';
-import { Event } from '../../src/views/MyCalendar/MyCalendar';
+import { Event } from '../types/interfaces';
 
 //This function checks if the event occurs on the given day.
 export const occursOnDay = (event: Event, day: Date): boolean => {

@@ -7,7 +7,7 @@ import {
   endOfDay,
 } from 'date-fns';
 import { getOccurrenceStart, occursOnDay } from '../../utils/calendarHelpers';
-import { Event } from '../../views/MyCalendar/MyCalendar';
+import { Event } from '../../types/interfaces';
 
 const WorkWeekView = ({
   currentDate,

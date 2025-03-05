@@ -8,7 +8,6 @@ import { saveUserToDatabase } from "../../services/db-service";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button/Button";
 
-
 interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;

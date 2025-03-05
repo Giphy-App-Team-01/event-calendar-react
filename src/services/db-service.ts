@@ -1,19 +1,6 @@
 import { get, ref, set, update } from 'firebase/database';
 import { db } from '../../firebase.config';
-
-export interface databaseUser {
-  username: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  address: string;
-  email: string;
-  image: string;
-  allowEventInvites: boolean;
-  uid: string;
-  isAdmin: boolean;
-  isBlocked: boolean;
-}
+import { databaseUser } from '../types/interfaces';
 
 export const saveUserToDatabase = async (
   uid: string,

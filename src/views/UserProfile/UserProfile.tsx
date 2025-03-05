@@ -5,7 +5,6 @@ import {
   getUserById,
   getUserEventsByProfile,
   getEventInvitesById,
-  databaseUser,
   updateUserProfile,
   toggleUserAdminStatus,
   toggleUserBlockStatus,
@@ -15,63 +14,30 @@ import { uploadImageToCloudinary } from '../../services/upload-service';
 import { AppContext } from '../../context/app.context';
 import SingleEventItemCard from '../../components/SingleEventItemCard/SingleEventItemCard';
 import { toast } from 'react-toastify';
-
-interface User {
-  firstName: string;
-  lastName: string;
-  username: string;
-  phoneNumber: string;
-  address: string;
-  email: string;
-  isAdmin: boolean;
-  image?: string;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  start: string;
-  end: string;
-  location: string;
-  mapUrl: string;
-  creator: string;
-  visibility: 'public' | 'private';
-  image: string;
-}
-interface InvitedEvent {
-  id: string;
-  title: string;
-  description: string;
-  start: string;
-  end: string;
-  location: string;
-  mapUrl: string;
-  visibility: 'public' | 'private';
-}
+import { databaseUser,Event, AppContextType } from '../../types/interfaces';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { authUser, dbUser } = useContext(AppContext);
+  const { authUser, dbUser } = useContext(AppContext) as AppContextType;
   const [user, setUser] = useState<databaseUser | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [profilePic, setProfilePic] = useState<string>(defaultAvatar);
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<Omit<databaseUser, 'uid' | 'isAdmin' | 'isBlocked' | 'allowEventInvites'>>({
     firstName: '',
     lastName: '',
     username: '',
     phoneNumber: '',
     address: '',
     email: '',
-    isAdmin: false,
+    image: '',
   });
 
   const [activeTab, setActiveTab] = useState<'myEvents' | 'invitedEvents'>(
     'myEvents'
   );
   const [events, setEvents] = useState<Event[]>([]);
-  const [invitedEvents, setInvitedEvents] = useState<InvitedEvent[]>([]);
+  const [invitedEvents, setInvitedEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
 
   useEffect(() => {
@@ -88,7 +54,7 @@ const Profile: React.FC = () => {
           phoneNumber: userData.phoneNumber,
           address: userData.address,
           email: userData.email,
-          isAdmin: userData.isAdmin,
+          image: userData.image,
         });
       }
     };
@@ -242,7 +208,7 @@ const Profile: React.FC = () => {
               <div className="flex flex-col space-y-2">
                 {(
                   ['firstName', 'lastName', 'phoneNumber', 'address'] as Array<
-                    keyof User
+                    keyof databaseUser
                   >
                 ).map((field) => (
                   <input
@@ -250,7 +216,7 @@ const Profile: React.FC = () => {
                     type="text"
                     name={field}
                     value={
-                      typeof formData[field] === 'string' ? formData[field] : ''
+                      typeof formData[field as keyof typeof formData] === 'string' ? formData[field as keyof typeof formData] : ''
                     }
                     onChange={handleInputChange}
                     className="border border-gray-300 px-3 py-1 rounded-md w-12/13 bg-gray-100 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
