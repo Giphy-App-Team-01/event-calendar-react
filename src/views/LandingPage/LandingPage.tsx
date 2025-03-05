@@ -2,6 +2,7 @@ import Button from '../../components/Button/Button';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import calendarHome from '../../assets/images/calendar-home.jpeg';
 import { getAllPublicEvents } from '../../services/db-service';
+import EventsGrid from '../../components/EventsGrid/EventsGrid';
 interface HeaderProps {
   setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
   setIsRegisterOpen: Dispatch<SetStateAction<boolean>>;
@@ -24,6 +25,8 @@ const LandingPage: React.FC<HeaderProps> = ({
 
     fetchPublicEvents();
   }, []);
+
+  console.log(publicEvents);
   return (
     <>
       <div className='hero flex items-center gap-10'>
@@ -54,16 +57,16 @@ const LandingPage: React.FC<HeaderProps> = ({
           <img src={calendarHome} alt='' />
         </div>
       </div>
-      <div className='public-events'>
-        {publicEvents &&
-          publicEvents.map((event: any) => (
-            <div key={event.id}>
-              <h2>{event.title}</h2>
-              <p>{event.start}</p>
-              <p>{event.end}</p>
-              <p>{event.location}</p>
-            </div>
-          ))}
+      <div className='public-events mt-10'>
+        <h2 className='text-4xl font-bold text-gray-950 mb-6 text-center'>
+          Public Events
+        </h2>
+        {publicEvents && (
+          <EventsGrid
+            events={publicEvents}
+            className='grid-cols-4 gap-4 mt-5'
+          />
+        )}
       </div>
     </>
   );

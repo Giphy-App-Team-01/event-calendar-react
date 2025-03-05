@@ -98,31 +98,20 @@ export const getAllUsers = async (): Promise<databaseUser[]> => {
 
 export const getAllPublicEvents = async () => {
   try {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: 2,
-            title: 'Team Meeting',
-            description: 'Weekly sync-up',
-            start: '2025-03-10T09:00',
-            end: '2025-03-10T09:15',
-            location: 'Sofia, Bulgaria',
-            mapUrl: 'https://maps.google.com/location',
-            image:
-              'https://images.unsplash.com/photo-1504384308090-c894fdcc538d',
-            creator: 'userId1',
-            participants: {
-              userId2: true,
-            },
-            recurring: 'weekly',
-            visibility: 'public',
-          },
-        ]);
-      }, 1000);
-    });
+    const eventsRef = ref(db, 'events');
+    const snapshot = await get(eventsRef);
+
+    if (snapshot.exists()) {
+      const events = snapshot.val();
+      const publicEvents = Object.values(events).filter(
+        (event) => event.visability === 'public'
+      );
+      return publicEvents;
+    }
+    return [];
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching public events:', error);
+    return [];
   }
 };
 
