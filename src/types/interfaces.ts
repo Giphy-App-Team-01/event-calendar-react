@@ -43,6 +43,23 @@ export interface databaseUser {
   uid: string;
   isAdmin: boolean;
   isBlocked: boolean;
+  contacts?: { [key: string]: boolean };
+  friendRequests?: {
+    received?: Record<string, boolean>;
+    sent?: Record<string, boolean>;
+  };
+}
+
+export interface Notification {
+  id: string;
+  senderImage?: string;
+  message: string;
+  type: 'friend_request' | 'event_invite';
+  senderId?: string;
+  eventId?: string;
+  eventTitle?: string;
+  eventStart?: string;
+  userId: string;
 }
 
 //Interface for the app state which is used in the context

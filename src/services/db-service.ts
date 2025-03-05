@@ -1,6 +1,15 @@
-import { get, ref, set, update } from 'firebase/database';
+import {
+  get,
+  off,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+  update,
+} from 'firebase/database';
 import { db } from '../../firebase.config';
-import { databaseUser } from '../types/interfaces';
+import { databaseUser, Notification, Event } from '../types/interfaces';
 
 export const saveUserToDatabase = async (
   uid: string,
@@ -359,5 +368,202 @@ export const toggleUserBlockStatus = async (uid: string) => {
   } catch (error) {
     console.error('Error toggling block status:', error);
     return { success: false, message: 'Failed to update block status.' };
+  }
+};
+
+
+export const listenForNotifications = (
+  userId: string,
+  setNotifications: (notifications: Notification[]) => void
+) => {
+  const notificationsRef = ref(db, "notifications");
+
+  const unsubscribe = onValue(notificationsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const userNotifications: Notification[] = Object.entries(data)
+        .filter(([_, notif]) => (notif as Notification).userId === userId)
+        .map(([id, notif]) => ({ ...(notif as Notification), id }));
+
+      setNotifications(userNotifications);
+    } else {
+      setNotifications([]);
+    }
+  });
+
+  return () => off(notificationsRef, "value", unsubscribe);
+};
+
+export const sendFriendRequest = async (
+  currentUserId: string,
+  targetUserId: string
+) => {
+  try {
+    const senderRef = ref(db, `users/${currentUserId}`);
+    const senderSnapshot = await get(senderRef);
+    const senderData = senderSnapshot.val();
+
+    if (!senderData) {
+      console.error('Sender data not found!');
+      return;
+    }
+
+    const updates: Record<string, unknown> = {};
+    updates[`users/${currentUserId}/friendRequests/sent/${targetUserId}`] = true;
+    updates[`users/${targetUserId}/friendRequests/received/${currentUserId}`] =
+      true;
+
+    await update(ref(db), updates);
+
+    const notificationsRef = ref(db, 'notifications');
+    await push(notificationsRef, {
+      userId: targetUserId,
+      type: 'friend_request',
+      message: `${senderData.firstName} ${senderData.lastName} sent you a friend request!`,
+      senderId: currentUserId,
+      senderImage: senderData.image,
+      timestamp: Date.now(),
+    });
+
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+  }
+};
+
+export const acceptFriendRequest = async (
+  currentUserId: string,
+  senderId: string,
+  notificationId: string
+) => {
+  try {
+    const updates: Record<string, unknown> = {};
+
+    updates[`users/${currentUserId}/contacts/${senderId}`] = true;
+    updates[`users/${senderId}/contacts/${currentUserId}`] = true;
+
+    updates[`users/${currentUserId}/friendRequests/received/${senderId}`] = null;
+    updates[`users/${senderId}/friendRequests/sent/${currentUserId}`] = null;
+
+    updates[`notifications/${notificationId}`] = null;
+
+    await update(ref(db), updates);
+  } catch (error) {
+    console.error('Error accepting friend request:', error);
+  }
+};
+
+export const declineFriendRequest = async (
+  currentUserId: string,
+  senderId: string,
+  notificationId: string
+) => {
+  try {
+    const updates: Record<string, unknown> = {};
+
+    updates[`users/${currentUserId}/friendRequests/received/${senderId}`] = null;
+    updates[`users/${senderId}/friendRequests/sent/${currentUserId}`] = null;
+
+    updates[`notifications/${notificationId}`] = null;
+
+    await update(ref(db), updates);
+  } catch (error) {
+    console.error('Error declining friend request:', error);
+  }
+};
+
+
+export const removeFriend = async (currentUserId: string, friendId: string) => {
+  try {
+    const updates: Record<string, unknown> = {};
+    updates[`users/${currentUserId}/contacts/${friendId}`] = null;
+    updates[`users/${friendId}/contacts/${currentUserId}`] = null;
+
+    await update(ref(db), updates);
+  } catch (error) {
+    console.error('Error removing friend:', error);
+  }
+};
+
+export const getUserEvents = async (userId: string) => {
+  try {
+    const eventsRef = ref(db, 'events');
+    const snapshot = await get(eventsRef);
+    const allEvents = snapshot.val();
+
+    if (!allEvents) return [];
+
+    return Object.entries(allEvents)
+      .filter(([, event]) => (event as Event).creatorId === userId)
+      .map(([id, event]) => ({ ...(event as Event), id })); //
+  } catch (error) {
+    console.error('Error fetching user events:', error);
+    return [];
+  }
+};
+
+export const sendEventInvite = async (
+  senderId: string,
+  recipientId: string,
+  eventId: string
+) => {
+  try {
+    const eventRef = ref(db, `events/${eventId}`);
+    const eventSnapshot = await get(eventRef);
+    const eventData = eventSnapshot.val();
+    console.log('data', eventData);
+
+    if (!eventData) {
+      console.error('Event not found!');
+      return;
+    }
+
+    const notificationsRef = ref(db, 'notifications');
+    await push(notificationsRef, {
+      userId: recipientId,
+      type: 'event_invite',
+      message: `You have been invited to "${eventData.title}"`,
+      senderId,
+      senderImage: eventData.image, 
+      eventId,
+      eventTitle: eventData.title, 
+      eventStart: eventData.start, 
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    console.error('Error sending event invite:', error);
+  }
+};
+
+export const acceptEventInvite = async (
+  userId: string,
+  eventId: string,
+  notificationId: string
+) => {
+  try {
+    const eventRef = ref(db, `events/${eventId}`);
+    const eventSnapshot = await get(eventRef);
+    const eventData = eventSnapshot.val();
+
+    if (!eventData) {
+      console.error('Event not found!');
+      return;
+    }
+
+    const updates: Record<string, unknown> = {};
+    updates[`events/${eventId}/participants/${userId}`] = true;
+
+    await update(ref(db), updates);
+    await remove(ref(db, `notifications/${notificationId}`));
+
+  } catch (error) {
+    console.error('Error accepting event invite:', error);
+  }
+};
+
+export const declineEventInvite = async (notificationId: string) => {
+  try {
+    await remove(ref(db, `notifications/${notificationId}`));
+  } catch (error) {
+    console.error('Error declining event invite:', error);
   }
 };

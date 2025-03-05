@@ -8,6 +8,7 @@ import {
   updateUserProfile,
   toggleUserAdminStatus,
   toggleUserBlockStatus,
+  sendFriendRequest,
 } from '../../services/db-service';
 import Button from '../../components/Button/Button';
 import { uploadImageToCloudinary } from '../../services/upload-service';
@@ -15,6 +16,13 @@ import { AppContext } from '../../context/app.context';
 import { toast } from 'react-toastify';
 import { databaseUser, Event, AppContextType } from '../../types/interfaces';
 import EventsList from '../../components/EventsGrid/EventsList';
+import {
+  CalendarCheck,
+  CalendarX,
+  Hourglass,
+  UserCheck,
+  UserPlus,
+} from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +31,10 @@ const Profile: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [profilePic, setProfilePic] = useState<string>(defaultAvatar);
+  const [isFriendRequestSent, setIsFriendRequestSent] =
+    useState<boolean>(false);
+  const [isFriend, setIsFriend] = useState<boolean>(false);
+
   const [formData, setFormData] = useState<
     Omit<databaseUser, 'uid' | 'isAdmin' | 'isBlocked'>
   >({
@@ -45,6 +57,10 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       if (!id) return;
+
+      setIsFriend(false);
+      setIsFriendRequestSent(false);
+
       const userData = await getUserById(id);
       if (userData) {
         setUser(userData);
@@ -60,6 +76,14 @@ const Profile: React.FC = () => {
           allowEventInvites: userData.allowEventInvites,
         });
       }
+
+      if (authUser?.uid && userData && userData.contacts?.[authUser.uid]) {
+        setIsFriend(true);
+      }
+
+      if (authUser?.uid && userData && userData.friendRequests?.received?.[authUser.uid]) {
+        setIsFriendRequestSent(true);
+      }
     };
 
     fetchUser();
@@ -69,7 +93,6 @@ const Profile: React.FC = () => {
     if (!id) return;
 
     const fetchAllEvents = async () => {
-
       try {
         const userEvents = await getUserEventsByProfile(id);
         setEvents(userEvents || []);
@@ -88,6 +111,19 @@ const Profile: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSendFriendRequest = async () => {
+    if (!authUser || !user) return;
+
+    try {
+      await sendFriendRequest(authUser.uid, user.uid);
+      setIsFriendRequestSent(true);
+      toast.success('Friend request sent!');
+    } catch (error) {
+      toast.error('Failed to send friend request.');
+      console.error('Error sending friend request:', error);
+    }
   };
 
   const handleProfilePicChange = async (
@@ -281,18 +317,52 @@ const Profile: React.FC = () => {
               </div>
             ) : (
               <>
-                <p className="text-gray-800 font-medium">
+                <p className="text-gray-800 font-medium leading-tight">
                   {formData.firstName} {formData.lastName}
                 </p>
-                <p className="text-gray-700">{formData.phoneNumber}</p>
-                <p className="text-gray-700">{formData.address}</p>
-                <p className="text-gray-700">
-                  {user?.allowEventInvites
-                    ? '✅ Accepting Event Invites'
-                    : '❌ Not Accepting Invites'}
-                </p>
+                <p className="text-gray-700 leading-tight">{formData.phoneNumber}</p>
+                <p className="text-gray-700 leading-tight">{formData.address}</p>
+            
+                {/* Статус за покани за събития */}
+                {user?.allowEventInvites ? (
+                  <p className="text-blue-700 font-medium flex items-center gap-2 leading-tight">
+                    <CalendarCheck className="w-5 h-5 text-blue-700" />
+                    <span>Accepting event invites</span>
+                  </p>
+                ) : (
+                  <p className="text-red-700 font-medium flex items-center gap-2 leading-tight">
+                    <CalendarX className="w-5 h-5 text-red-700" />
+                    <span>Not accepting event invites</span>
+                  </p>
+                )}
+            
+                {/* Бутон за приятелство */}
+                {authUser?.uid !== id && (
+                  <div className="mt-2">
+                    {isFriend ? (
+                      <p className="text-green-700 font-medium flex items-center gap-2 leading-tight">
+                        <UserCheck className="w-5 h-5 text-green-700" />
+                        <span>You are friends</span>
+                      </p>
+                    ) : isFriendRequestSent ? (
+                      <p className="text-gray-700 font-medium flex items-center gap-2 leading-tight">
+                        <Hourglass className="w-5 h-5 text-gray-500" />
+                        <span>Friend request pending...</span>
+                      </p>
+                    ) : (
+                      <Button
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center gap-2 justify-center shadow-md"
+                        onClick={handleSendFriendRequest}
+                      >
+                        <UserPlus className="w-5 h-5 text-white" />
+                        Add to Contacts
+                      </Button>
+                    )}
+                  </div>
+                )}
               </>
-            )}
+            )
+            }
           </div>
         </div>
 

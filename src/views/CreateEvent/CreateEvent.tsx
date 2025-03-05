@@ -212,6 +212,7 @@ const CreateEvent: React.FC = () => {
         </div>
 
         {/* Guests */}
+        {/* Това вече е ненужно може да го премахнеш поканите за event се случват през contacts (Митко) */}
         <div>
           <label className='label font-medium text-blue-950 mb-2'>Guests</label>
           <div className='relative'>
