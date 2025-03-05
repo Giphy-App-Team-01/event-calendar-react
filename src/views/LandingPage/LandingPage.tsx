@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import calendarHome from '../../assets/images/calendar-home.jpeg';
 import { getAllPublicEvents } from '../../services/db-service';
 import EventsGrid from '../../components/EventsGrid/EventsGrid';
+import { Event } from '../../types/interfaces';
 interface HeaderProps {
   setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
   setIsRegisterOpen: Dispatch<SetStateAction<boolean>>;
