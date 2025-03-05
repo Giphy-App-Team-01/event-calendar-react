@@ -1,10 +1,12 @@
 import Button from '../../components/Button/Button';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import calendarHome from '../../assets/images/calendar-home.jpeg';
 import { getAllPublicEvents } from '../../services/db-service';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import { Event } from '../../types/interfaces';
 import EventsList from '../../components/EventsGrid/EventsList';
+import { AppContext} from '../../context/app.context';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
@@ -17,6 +19,8 @@ const LandingPage: React.FC<HeaderProps> = ({
 }) => {
   const [publicEvents, setPublicEvents] = useState<Event[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const {authUser} = useContext(AppContext);
+  const navigation = useNavigate();
 
   useEffect(() => {
     const fetchPublicEvents = async () => {
@@ -47,18 +51,29 @@ const LandingPage: React.FC<HeaderProps> = ({
             calendar that works across your workspace.
           </div>
           <div className="flex items-center gap-4 mt-6">
-            <Button
-              onClick={() => setIsLoginOpen(true)}
+            {authUser ? (
+              <Button
+              onClick={() => navigation('/my-calendar')}
               className="bg-cyan-500 hover:bg-cyan-600 text-white transition"
-            >
-              Sign in
-            </Button>
-            <Button
-              onClick={() => setIsRegisterOpen(true)}
-              className="bg-white text-gray-900 hover:bg-gray-200"
-            >
-              Register
-            </Button>
+              >
+              Go To Calendar
+              </Button>
+            ) : (
+              <>
+              <Button
+                onClick={() => setIsLoginOpen(true)}
+                className="bg-cyan-500 hover:bg-cyan-600 text-white transition"
+              >
+                Sign in
+              </Button>
+              <Button
+                onClick={() => setIsRegisterOpen(true)}
+                className="bg-white text-gray-900 hover:bg-gray-200"
+              >
+                Register
+              </Button>
+              </>
+            )}
           </div>
         </div>
         <div className="img-box w-1/2">

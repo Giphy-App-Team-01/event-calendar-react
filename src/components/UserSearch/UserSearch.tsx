@@ -3,7 +3,6 @@ import { getAllUsers } from "../../services/db-service";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
 import { databaseUser } from "../../types/interfaces";
-import defaultAvatar from "../../assets/images/default-avatar.jpg";
 
 const UserSearch = () => {
   const navigate = useNavigate();
@@ -11,12 +10,10 @@ const UserSearch = () => {
   const [users, setUsers] = useState<databaseUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<databaseUser[]>([]);
 
-  // ✅ Зареждаме всички потребители от базата
   useEffect(() => {
     getAllUsers().then(setUsers);
   }, []);
 
-  // ✅ Филтрираме резултатите, когато `searchTerm` се промени
   useEffect(() => {
     setFilteredUsers(
       users.filter((user) =>
@@ -27,14 +24,11 @@ const UserSearch = () => {
 
   return (
     <div className="relative w-full max-w-sm">
-      {/* ✅ Използваме новата SearchBar */}
       <SearchBar
         searchTerm={searchTerm}
         onChange={setSearchTerm}
         placeholder="Search users..."
       />
-
-      {/* ✅ Показваме dropdown само ако има резултати */}
       {searchTerm && filteredUsers.length > 0 && (
         <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-2 max-h-60 overflow-y-auto z-50">
           {filteredUsers.map((user) => (
@@ -44,7 +38,7 @@ const UserSearch = () => {
               onClick={() => navigate(`/user/${user.uid}`)}
             >
               <img
-                src={user.image || defaultAvatar}
+                src={user.image}
                 alt={user.username}
                 className="w-10 h-10 rounded-full object-cover border border-gray-300"
               />

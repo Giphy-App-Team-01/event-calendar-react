@@ -4,17 +4,15 @@ interface SearchBarProps {
   searchTerm: string;
   onChange: (term: string) => void;
   placeholder?: string;
-  className?: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   searchTerm,
   onChange,
   placeholder = "Search...",
-  className = "",
 }) => {
   return (
-    <div className={`relative w-full max-w-sm ${className}`}>
+    <div className={'relative w-full max-w-sm'}>
       <div className="relative flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-blue-400 transition">
         <svg
           className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2"
