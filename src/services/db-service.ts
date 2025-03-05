@@ -122,9 +122,11 @@ export const getAllPublicEvents = async () => {
             end: '2025-03-10T09:15',
             location: 'Sofia, Bulgaria',
             mapUrl: 'https://maps.google.com/location',
+            image:
+              'https://images.unsplash.com/photo-1504384308090-c894fdcc538d',
             creator: 'userId1',
             participants: {
-              userId2: 'true',
+              userId2: true,
             },
             recurring: 'weekly',
             visibility: 'public',
