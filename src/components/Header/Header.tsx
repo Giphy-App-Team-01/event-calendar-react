@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../Button/Button';
-import SearchBar from '../SearchBar/SearchBar';
 import { useContext, Dispatch, SetStateAction } from 'react';
 import LoginModal from '../../views/LoginModal/LoginModal';
 import RegisterModal from '../../views/RegisterModal/RegisterModal';
@@ -8,6 +7,7 @@ import { logoutUser } from '../../services/auth-service';
 import { AppContext } from '../../context/app.context';
 import { toast } from 'react-toastify';
 import Container from '../Container/Container';
+import UserSearch from '../UserSearch/UserSearch';
 interface HeaderProps {
   isLoginOpen: boolean;
   setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className='flex items-center gap-6'>
             {authUser ? (
               <>
-                <SearchBar className='hidden md:block' />
+                <UserSearch />
                 <Button
                   onClick={handleLogout}
                   className='bg-red-400 hover:bg-red-500 text-white'

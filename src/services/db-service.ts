@@ -104,7 +104,7 @@ export const getAllPublicEvents = async () => {
     if (snapshot.exists()) {
       const events = snapshot.val();
       const publicEvents = Object.values(events).filter(
-        (event) => event.visability === 'public'
+        (event) => event.visibility === 'public'
       );
       return publicEvents;
     }
