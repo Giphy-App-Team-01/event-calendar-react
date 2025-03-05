@@ -1,19 +1,7 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
-import { databaseUser } from '../services/db-service';
+import { createContext } from 'react';
+import { AppContextType } from '../types/interfaces';
 
-interface AuthUser {
-  uid: string;
-  // Add more properties here if needed
-}
-
-interface AppState {
-  authUser: AuthUser | null;
-  dbUser: databaseUser | null;
-  loading: boolean;
-  setAppState: Dispatch<SetStateAction<AppState>>;
-}
-
-export const AppContext = createContext<AppState>({
+export const AppContext = createContext<AppContextType>({
   authUser: null,
   dbUser: null,
   loading: true,

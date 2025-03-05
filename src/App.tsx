@@ -13,28 +13,12 @@ import AdminDashboard from './views/AdminDashboard/AdminDashboard';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase.config';
 import { onValue, ref } from 'firebase/database';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppContext } from './context/app.context';
 import { ToastContainer } from 'react-toastify';
 import AuthGuard from './hoc/AuthGuard';
+import { AppState, AppContextType } from './types/interfaces';
 
-interface FirebaseUser {
-  [key: string]: any; // Generalized structure for auth user
-}
-
-interface DbUser {
-  [key: string]: any; // Generalized structure for DB user
-}
-
-interface AppState {
-  authUser: FirebaseUser | null;
-  dbUser: DbUser | null;
-  loading: boolean;
-}
-
-interface AppContextType extends AppState {
-  setAppState: Dispatch<SetStateAction<AppState>>;
-}
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>({

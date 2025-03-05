@@ -7,7 +7,7 @@ import {
   getDay,
 } from 'date-fns';
 import { occursOnDay } from '../../utils/calendarHelpers';
-import { Event } from '../../views/MyCalendar/MyCalendar';
+import { Event } from '../../types/interfaces';
 
 
 const MonthView = ({

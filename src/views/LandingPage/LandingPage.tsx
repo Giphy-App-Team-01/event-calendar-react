@@ -2,7 +2,6 @@ import Button from '../../components/Button/Button';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import calendarHome from '../../assets/images/calendar-home.jpeg';
 import { getAllPublicEvents } from '../../services/db-service';
-import SingleEventItemCard from '../../components/SingleEventItemCard/SingleEventItemCard';
 interface HeaderProps {
   setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
   setIsRegisterOpen: Dispatch<SetStateAction<boolean>>;
@@ -11,12 +10,12 @@ const LandingPage: React.FC<HeaderProps> = ({
   setIsLoginOpen,
   setIsRegisterOpen,
 }) => {
-  const [publicEvents, setPublicEvents] = useState([]);
+  const [publicEvents, setPublicEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     const fetchPublicEvents = async () => {
       try {
-        const data = await getAllPublicEvents();
+        const data = (await getAllPublicEvents()) as Event[];
         setPublicEvents(data);
       } catch (err) {
         console.log(err);
@@ -58,7 +57,12 @@ const LandingPage: React.FC<HeaderProps> = ({
       <div className='public-events'>
         {publicEvents &&
           publicEvents.map((event: any) => (
-            <SingleEventItemCard key={event.id} event={event} />
+            <div key={event.id}>
+              <h2>{event.title}</h2>
+              <p>{event.start}</p>
+              <p>{event.end}</p>
+              <p>{event.location}</p>
+            </div>
           ))}
       </div>
     </>

@@ -5,7 +5,6 @@ import {
   getUserById,
   getUserEventsByProfile,
   getEventInvitesById,
-  databaseUser,
   updateUserProfile,
   toggleUserAdminStatus,
   toggleUserBlockStatus,
@@ -15,63 +14,33 @@ import { uploadImageToCloudinary } from '../../services/upload-service';
 import { AppContext } from '../../context/app.context';
 import SingleEventItemCard from '../../components/SingleEventItemCard/SingleEventItemCard';
 import { toast } from 'react-toastify';
-
-interface User {
-  firstName: string;
-  lastName: string;
-  username: string;
-  phoneNumber: string;
-  address: string;
-  email: string;
-  isAdmin: boolean;
-  image?: string;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  start: string;
-  end: string;
-  location: string;
-  mapUrl: string;
-  creator: string;
-  visibility: 'public' | 'private';
-  image: string;
-}
-interface InvitedEvent {
-  id: string;
-  title: string;
-  description: string;
-  start: string;
-  end: string;
-  location: string;
-  mapUrl: string;
-  visibility: 'public' | 'private';
-}
+import { databaseUser, Event, AppContextType } from '../../types/interfaces';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { authUser, dbUser } = useContext(AppContext);
+  const { authUser, dbUser } = useContext(AppContext) as AppContextType;
   const [user, setUser] = useState<databaseUser | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [profilePic, setProfilePic] = useState<string>(defaultAvatar);
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<
+    Omit<databaseUser, 'uid' | 'isAdmin' | 'isBlocked'>
+  >({
     firstName: '',
     lastName: '',
     username: '',
     phoneNumber: '',
     address: '',
     email: '',
-    isAdmin: false,
+    image: '',
+    allowEventInvites: false,
   });
 
   const [activeTab, setActiveTab] = useState<'myEvents' | 'invitedEvents'>(
     'myEvents'
   );
   const [events, setEvents] = useState<Event[]>([]);
-  const [invitedEvents, setInvitedEvents] = useState<InvitedEvent[]>([]);
+  const [invitedEvents, setInvitedEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
 
   useEffect(() => {
@@ -88,7 +57,8 @@ const Profile: React.FC = () => {
           phoneNumber: userData.phoneNumber,
           address: userData.address,
           email: userData.email,
-          isAdmin: userData.isAdmin,
+          image: userData.image,
+          allowEventInvites: userData.allowEventInvites,
         });
       }
     };
@@ -98,28 +68,27 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-  
+
     const fetchAllEvents = async () => {
       setLoadingEvents(true);
-  
+
       try {
         const userEvents = await getUserEventsByProfile(id);
         setEvents(userEvents || []);
-  
+
         if (authUser?.uid === id) {
           const invitedEventsData = await getEventInvitesById(id);
           setInvitedEvents(invitedEventsData || []);
         }
       } catch (error) {
-        console.error("Error fetching events:", error);
+        console.error('Error fetching events:', error);
       } finally {
-        setLoadingEvents(false); 
+        setLoadingEvents(false);
       }
     };
-  
+
     fetchAllEvents();
   }, [id, authUser]);
-  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -138,28 +107,48 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleToggleInvites = () => {
+    setFormData((prev) => ({
+      ...prev,
+      allowEventInvites: !prev.allowEventInvites,
+    }));
+  };
+
+  const handleEdit = () => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        allowEventInvites: user.allowEventInvites, 
+      }));
+    }
+    setEditing(true);
+  };
+
   const handleSave = async () => {
     if (!user) return;
-
+  
     const updatedData = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       phoneNumber: formData.phoneNumber,
       address: formData.address,
       image: profilePic,
+      allowEventInvites: formData.allowEventInvites, 
     };
-
+  
     const result = await updateUserProfile(user.uid, updatedData);
     if (result.success) {
       setUser((prevUser) =>
         prevUser ? { ...prevUser, ...updatedData } : null
       );
+      
       setEditing(false);
       toast.success('Profile updated successfully!');
     } else {
-      toast.error(result.message);
+      toast.error('Failed to update profile.');
     }
   };
+  
 
   const handleToggleAdmin = async () => {
     if (!user) return;
@@ -242,20 +231,57 @@ const Profile: React.FC = () => {
               <div className="flex flex-col space-y-2">
                 {(
                   ['firstName', 'lastName', 'phoneNumber', 'address'] as Array<
-                    keyof User
+                    keyof databaseUser
                   >
                 ).map((field) => (
                   <input
                     key={field}
                     type="text"
                     name={field}
-                    value={
-                      typeof formData[field] === 'string' ? formData[field] : ''
-                    }
+                    value={String(formData[field as keyof typeof formData] ?? '')} 
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-1 rounded-md w-12/13 bg-gray-100 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="border border-gray-300 px-3 py-1 rounded-md w-45 bg-gray-100 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 ))}
+
+                <div className="flex items-center gap-4 mt-4">
+                  <span
+                    className={`font-medium transition-colors ${
+                      formData.allowEventInvites
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
+                    {formData.allowEventInvites
+                      ? 'Invites Enabled'
+                      : 'Invites Disabled'}
+                  </span>
+
+
+                  <label className="cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={formData.allowEventInvites}
+                      onChange={handleToggleInvites}
+                    />
+                    <div
+                      className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-300 ${
+                        formData.allowEventInvites
+                          ? 'bg-green-500'
+                          : 'bg-red-500'
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-all duration-300 ${
+                          formData.allowEventInvites
+                            ? 'translate-x-7'
+                            : 'translate-x-0'
+                        }`}
+                      ></div>
+                    </div>
+                  </label>
+                </div>
               </div>
             ) : (
               <>
@@ -264,6 +290,11 @@ const Profile: React.FC = () => {
                 </p>
                 <p className="text-gray-700">{formData.phoneNumber}</p>
                 <p className="text-gray-700">{formData.address}</p>
+                <p className="text-gray-700">
+                  {user?.allowEventInvites
+                    ? '✅ Accepting Event Invites'
+                    : '❌ Not Accepting Invites'}
+                </p>
               </>
             )}
           </div>
@@ -288,7 +319,7 @@ const Profile: React.FC = () => {
           ) : (
             <Button
               className="bg-gray-400 px-4 py-2 rounded-md mt-4 text-white cursor-pointer"
-              onClick={() => setEditing(true)}
+              onClick={handleEdit}
             >
               Edit Profile
             </Button>

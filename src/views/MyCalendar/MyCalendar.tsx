@@ -6,15 +6,8 @@ import MonthView from '../MonthView/MonthView';
 import WeekView from '../WeekView/WeekView';
 import WorkWeekView from '../WorkWeekView/WorkWeekView';
 import DayView from '../DayView/DayView';
+import { Event } from '../../types/interfaces';
 
-
-export interface Event {
-  id: string;
-  title: string;
-  start: string;
-  end: string;
-  recurrence?: 'daily' | 'weekly' | 'monthly';
-}
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState('month');
