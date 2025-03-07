@@ -1,257 +1,241 @@
-import { useState } from 'react';
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Globe,
-  Lock,
-  Image,
-  Repeat,
-  FileText,
-} from 'lucide-react';
 import Button from '../../components/Button/Button';
+import { useForm, Controller } from 'react-hook-form';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
 
 const CreateEvent: React.FC = () => {
-  const [eventData, setEventData] = useState({
-    eventName: '',
-    coverImage: null,
-    startDate: '',
-    startTime: '',
-    endDate: '',
-    endTime: '',
-    recurring: 'No recurring',
-    location: '',
-    description: '',
-    guests: '',
-    isPublic: true,
-  });
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { errors },
+  } = useForm();
 
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
-    setEventData((prev) => ({
-      ...prev,
-      [name]: type === 'file' ? e.target.files[0] : value,
-    }));
+  const onSubmit = (data) => {
+    console.log('Form Data:', data);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Event Created:', eventData);
-    // Handle event creation logic (e.g., API call)
+  // Handle file upload preview
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
 
+  // Reusable classes
   const inputClasses =
-    'input input-bordered w-full py-4 px-5 rounded-lg focus:ring-2 focus:ring-blue-300 bg-white text-gray-900 border-gray-300 z-10';
-  const textareaClasses =
-    'textarea textarea-bordered w-full py-4 px-5 rounded-lg focus:ring-2 focus:ring-blue-300 bg-white text-gray-900 border-gray-300 z-10';
+    'input input-bordered w-full py-4 px-5 rounded-lg focus:ring-2 focus:ring-blue-300 bg-white text-gray-900 border-gray-300';
+  const textareaClasses = `textarea textarea-bordered w-full py-4 px-5 rounded-lg focus:ring-2 focus:ring-blue-300 bg-white text-gray-900 border-gray-300`;
+  const rowsFormClasses = 'mt-2';
+  const labelClasses = 'block text-gray-700 font-medium mb-1';
+
   return (
     <div className='CreateEvent max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg'>
       <h1 className='text-3xl font-bold text-gray-900 mb-6'>Create an Event</h1>
 
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {/* Event Name */}
         <div>
-          <label className='label font-medium text-blue-950 mb-2'>
-            Event Name
-          </label>
-          <div className='relative'>
-            <Calendar
-              className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'
-              size={18}
-            />
-            <input
-              type='text'
-              name='eventName'
-              value={eventData.eventName}
-              onChange={handleChange}
-              placeholder='Enter event name'
-              className={`${inputClasses} pl-10`}
-              required
-            />
-          </div>
+          <label className={labelClasses}>Event Name</label>
+          <input
+            {...register('eventName', { required: 'Event name is required' })}
+            type='text'
+            placeholder='Enter event name'
+            className={inputClasses}
+          />
+          {errors.eventName && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.eventName.message}
+            </p>
+          )}
         </div>
 
-        {/* Cover Image */}
-        <div>
-          <label className='label font-medium text-blue-950 mb-2'>
-            Cover Image
-          </label>
-          <div className='relative'>
-            <Image className='absolute left-3 top-3 text-gray-500' size={18} />
-            <input
-              type='file'
-              name='coverImage'
-              accept='image/*'
-              onChange={handleChange}
-              className='file-input file-input-bordered w-full pl-10'
-            />
-          </div>
+        {/* Cover Image Upload */}
+        <div className={rowsFormClasses}>
+          <label className={labelClasses}>Cover Image</label>
+          <input
+            type='file'
+            {...register('coverImage', { required: 'Cover image is required' })}
+            onChange={handleFileChange}
+            className='file-input file-input-primary w-full'
+            accept='image/*'
+          />
+          {errors.coverImage && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.coverImage.message}
+            </p>
+          )}
         </div>
 
-        {/* Start & End Date/Time */}
-        <div className='grid grid-cols-2 gap-4'>
+        {/* Start Date & Time */}
+        <div className={rowsFormClasses + ' grid grid-cols-2 gap-4'}>
+          {/* Start Date Picker */}
           <div>
-            <label className='label font-medium text-blue-950 mb-2'>
-              Start Date
-            </label>
-            <Calendar
-              className='absolute left-3 top-3 text-gray-500'
-              size={18}
-            />
-            <input
-              type='date'
+            <label className={labelClasses}>Start Date</label>
+            <Controller
               name='startDate'
-              value={eventData.startDate}
-              onChange={handleChange}
-              className={inputClasses}
-              required
+              control={control}
+              rules={{ required: 'Start date is required' }}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  selected={field.value}
+                  onChange={(date) => field.onChange(date)}
+                  dateFormat='MMMM d, yyyy'
+                  className={inputClasses}
+                  popperClassName='shadow-lg'
+                />
+              )}
             />
+            {errors.startDate && (
+              <p className='text-red-500 text-sm mt-1'>
+                {errors.startDate.message}
+              </p>
+            )}
           </div>
+
+          {/* Start Time Picker */}
           <div>
-            <label className='label font-medium text-blue-950 mb-2'>
-              Start Time
-            </label>
-            <input
-              type='time'
+            <label className={labelClasses}>Start Time</label>
+            <Controller
               name='startTime'
-              value={eventData.startTime}
-              onChange={handleChange}
-              className={inputClasses}
-              required
+              control={control}
+              rules={{ required: 'Start time is required' }}
+              render={({ field }) => (
+                <TimePicker
+                  {...field}
+                  value={field.value}
+                  onChange={(time) => field.onChange(time)}
+                  className={inputClasses}
+                  disableClock={true}
+                />
+              )}
             />
+            {errors.startTime && (
+              <p className='text-red-500 text-sm mt-1'>
+                {errors.startTime.message}
+              </p>
+            )}
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-4'>
+        {/* End Date & Time */}
+        <div className={rowsFormClasses + ' grid grid-cols-2 gap-4'}>
+          {/* End Date Picker */}
           <div>
-            <label className='label font-medium text-blue-950 mb-2'>
-              End Date
-            </label>
-            <input
-              type='date'
+            <label className={labelClasses}>End Date</label>
+            <Controller
               name='endDate'
-              value={eventData.endDate}
-              onChange={handleChange}
-              className={inputClasses}
-              required
+              control={control}
+              rules={{ required: 'End date is required' }}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  selected={field.value}
+                  onChange={(date) => field.onChange(date)}
+                  dateFormat='MMMM d, yyyy'
+                  className={inputClasses}
+                  popperClassName='shadow-lg'
+                />
+              )}
             />
+            {errors.endDate && (
+              <p className='text-red-500 text-sm mt-1'>
+                {errors.endDate.message}
+              </p>
+            )}
           </div>
+
+          {/* End Time Picker */}
           <div>
-            <label className='label font-medium text-blue-950 mb-2'>
-              End Time
-            </label>
-            <input
-              type='time'
+            <label className={labelClasses}>End Time</label>
+            <Controller
               name='endTime'
-              value={eventData.endTime}
-              onChange={handleChange}
-              className={inputClasses}
-              required
+              control={control}
+              rules={{ required: 'End time is required' }}
+              render={({ field }) => (
+                <TimePicker
+                  {...field}
+                  value={field.value}
+                  onChange={(time) => field.onChange(time)}
+                  className={inputClasses}
+                  disableClock={true}
+                />
+              )}
             />
-          </div>
-        </div>
-
-        {/* Recurring Dropdown */}
-        <div>
-          <label className='label font-medium text-blue-950 mb-2'>
-            Recurring
-          </label>
-          <div className='relative'>
-            <Repeat className='absolute left-3 top-3 text-gray-500' size={18} />
-            <select
-              name='recurring'
-              value={eventData.recurring}
-              onChange={handleChange}
-              className={inputClasses}
-            >
-              <option>No recurring</option>
-              <option>Weekly</option>
-              <option>Monthly</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Location */}
-        <div>
-          <label className='label font-medium text-blue-950 mb-2'>
-            Location
-          </label>
-          <div className='relative'>
-            <MapPin className='absolute left-3 top-3 text-gray-500' size={18} />
-            <input
-              type='text'
-              name='location'
-              value={eventData.location}
-              onChange={handleChange}
-              placeholder='Enter event location'
-              className={inputClasses}
-              required
-            />
+            {errors.endTime && (
+              <p className='text-red-500 text-sm mt-1'>
+                {errors.endTime.message}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Description */}
-        <div>
-          <label className='label font-medium text-blue-950 mb-2'>
-            Description
-          </label>
-          <div className='relative'>
-            <FileText
-              className='absolute left-3 top-3 text-gray-500'
-              size={18}
-            />
-            <textarea
-              name='description'
-              value={eventData.description}
-              onChange={handleChange}
-              placeholder='Describe the event...'
-              className={textareaClasses}
-              rows={6}
-            />
-          </div>
+        <div className={rowsFormClasses}>
+          <label className={labelClasses}>Event Description</label>
+          <textarea
+            {...register('description', {
+              required: 'Description is required',
+              minLength: {
+                value: 10,
+                message: 'At least 10 characters required',
+              },
+            })}
+            placeholder='Describe the event...'
+            className={textareaClasses}
+            rows='4'
+          ></textarea>
+          {errors.description && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.description.message}
+            </p>
+          )}
         </div>
 
-        {/* Guests */}
-        {/* Това вече е ненужно може да го премахнеш поканите за event се случват през contacts (Митко) */}
-        <div>
-          <label className='label font-medium text-blue-950 mb-2'>Guests</label>
-          <div className='relative'>
-            <Users className='absolute left-3 top-3 text-gray-500' size={18} />
-            <input
-              type='text'
-              name='guests'
-              value={eventData.guests}
-              onChange={handleChange}
-              placeholder='Add guests (comma-separated)'
-              className={inputClasses}
-            />
-          </div>
+        {/* Location */}
+        <div className={rowsFormClasses}>
+          <label className='block text-gray-700 font-medium mb-1'>
+            Location
+          </label>
+          <input
+            {...register('location', { required: 'Location is required' })}
+            type='text'
+            placeholder='Enter event location'
+            className={inputClasses}
+          />
+          {errors.location && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.location.message}
+            </p>
+          )}
         </div>
 
-        {/* Privacy Toggle */}
-        <div className='flex items-center gap-4'>
-          <span className='font-medium text-blue-950'>Event Privacy:</span>
-          <label className='swap swap-rotate'>
-            <input
-              type='checkbox'
-              name='isPublic'
-              checked={eventData.isPublic}
-              onChange={handleChange}
-            />
-            <Globe className='swap-on text-green-500' size={20} />
-            <Lock className='swap-off text-red-500' size={20} />
-          </label>
-          <span className='font-medium text-blue-950'>
-            {eventData.isPublic ? 'Public' : 'Private'}
-          </span>
+        {/* Visibility Toggle */}
+        <div className={`${rowsFormClasses} flex items-center justify-between`}>
+          <label className='text-gray-700 font-medium'>Event Visibility</label>
+          <Controller
+            name='visibility'
+            control={control}
+            defaultValue={false}
+            render={({ field }) => (
+              <input
+                type='checkbox'
+                className='toggle toggle-primary' // This should work for a switch
+                checked={field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+              />
+            )}
+          />
         </div>
 
         {/* Submit Button */}
-        <div>
-          <Button type='submit' className='btn btn-primary w-full'>
-            Create Event
-          </Button>
-        </div>
+        <Button type='submit' className='btn btn-primary mt-5'>
+          Create Event
+        </Button>
       </form>
     </div>
   );

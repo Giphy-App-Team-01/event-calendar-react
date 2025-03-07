@@ -1,2 +1,9 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+.react-datepicker-wrapper {
+  width: 100% !important;
+}
+.react-time-picker__wrapper {
+  border: none;
+}
