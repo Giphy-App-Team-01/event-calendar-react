@@ -3,12 +3,11 @@ import { useParams } from 'react-router-dom';
 import defaultAvatar from '../../assets/images/default-avatar.jpg';
 import {
   getUserById,
-  getUserEventsByProfile,
-  getEventInvitesById,
   updateUserProfile,
   toggleUserAdminStatus,
   toggleUserBlockStatus,
   sendFriendRequest,
+  getUserOwnedAndJoinedEvents,
 } from '../../services/db-service';
 import Button from '../../components/Button/Button';
 import { uploadImageToCloudinary } from '../../services/upload-service';
@@ -81,7 +80,11 @@ const Profile: React.FC = () => {
         setIsFriend(true);
       }
 
-      if (authUser?.uid && userData && userData.friendRequests?.received?.[authUser.uid]) {
+      if (
+        authUser?.uid &&
+        userData &&
+        userData.friendRequests?.received?.[authUser.uid]
+      ) {
         setIsFriendRequestSent(true);
       }
     };
@@ -91,23 +94,41 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-
+  
     const fetchAllEvents = async () => {
       try {
-        const userEvents = await getUserEventsByProfile(id);
-        setEvents(userEvents || []);
-
+        const allUserEvents = await getUserOwnedAndJoinedEvents(id);
+  
+        // Ако разглеждаш чужд профил -> виждаш само публични събития, в които не участваш
+        let publicEvents = allUserEvents.filter(
+          (event) => event.visibility === "public" && !event.participants?.[id]
+        );
+  
+        // Ако разглеждаш своя профил -> виждаш и private събитията, които си създал
         if (authUser?.uid === id) {
-          const invitedEventsData = await getEventInvitesById(id);
-          setInvitedEvents(invitedEventsData || []);
+          publicEvents = allUserEvents.filter(
+            (event) =>
+              (event.visibility === "public" || event.visibility === "private") &&
+              event.creatorId === id
+          );
+        }
+  
+        // Покани за събития (събития, в които си поканен)
+        const invitedEvents = allUserEvents.filter((event) => event.participants?.[id]);
+  
+        setEvents(publicEvents || []);
+  
+        if (authUser?.uid === id) {
+          setInvitedEvents(invitedEvents || []);
         }
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
       }
     };
-
+  
     fetchAllEvents();
   }, [id, authUser]);
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -320,9 +341,13 @@ const Profile: React.FC = () => {
                 <p className="text-gray-800 font-medium leading-tight">
                   {formData.firstName} {formData.lastName}
                 </p>
-                <p className="text-gray-700 leading-tight">{formData.phoneNumber}</p>
-                <p className="text-gray-700 leading-tight">{formData.address}</p>
-            
+                <p className="text-gray-700 leading-tight">
+                  {formData.phoneNumber}
+                </p>
+                <p className="text-gray-700 leading-tight">
+                  {formData.address}
+                </p>
+
                 {/* Статус за покани за събития */}
                 {user?.allowEventInvites ? (
                   <p className="text-blue-700 font-medium flex items-center gap-2 leading-tight">
@@ -335,7 +360,7 @@ const Profile: React.FC = () => {
                     <span>Not accepting event invites</span>
                   </p>
                 )}
-            
+
                 {/* Бутон за приятелство */}
                 {authUser?.uid !== id && (
                   <div className="mt-2">
@@ -361,8 +386,7 @@ const Profile: React.FC = () => {
                   </div>
                 )}
               </>
-            )
-            }
+            )}
           </div>
         </div>
 
