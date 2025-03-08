@@ -94,41 +94,40 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-  
+
     const fetchAllEvents = async () => {
       try {
         const allUserEvents = await getUserOwnedAndJoinedEvents(id);
-  
-        // Ако разглеждаш чужд профил -> виждаш само публични събития, в които не участваш
+
         let publicEvents = allUserEvents.filter(
-          (event) => event.visibility === "public" && !event.participants?.[id]
+          (event) => event.visibility === 'public' && !event.participants?.[id]
         );
-  
-        // Ако разглеждаш своя профил -> виждаш и private събитията, които си създал
+
         if (authUser?.uid === id) {
           publicEvents = allUserEvents.filter(
             (event) =>
-              (event.visibility === "public" || event.visibility === "private") &&
+              (event.visibility === 'public' ||
+                event.visibility === 'private') &&
               event.creatorId === id
           );
         }
-  
-        // Покани за събития (събития, в които си поканен)
-        const invitedEvents = allUserEvents.filter((event) => event.participants?.[id]);
-  
+
+        const invitedEvents = allUserEvents.filter(
+          (event) => event.participants?.[id]
+        );
+
         setEvents(publicEvents || []);
-  
+
         if (authUser?.uid === id) {
           setInvitedEvents(invitedEvents || []);
         }
       } catch (error) {
-        console.error("Error fetching events:", error);
+        console.error('Error fetching events:', error);
       }
     };
-  
+
     fetchAllEvents();
   }, [id, authUser]);
-  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -348,7 +347,6 @@ const Profile: React.FC = () => {
                   {formData.address}
                 </p>
 
-                {/* Статус за покани за събития */}
                 {user?.allowEventInvites ? (
                   <p className="text-blue-700 font-medium flex items-center gap-2 leading-tight">
                     <CalendarCheck className="w-5 h-5 text-blue-700" />
@@ -361,7 +359,6 @@ const Profile: React.FC = () => {
                   </p>
                 )}
 
-                {/* Бутон за приятелство */}
                 {authUser?.uid !== id && (
                   <div className="mt-2">
                     {isFriend ? (

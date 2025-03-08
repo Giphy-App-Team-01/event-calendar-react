@@ -56,42 +56,6 @@ export const saveUserToDatabase = async (
   }
 };
 
-export const getAllUserEmails = async () => {
-  try {
-    const snapshot = await get(ref(db, 'users'));
-
-    if (snapshot.exists()) {
-      const users = snapshot.val();
-      const emails = Object.values(users as Record<string, databaseUser>).map(
-        (user) => user.email
-      );
-      return emails;
-    }
-    return [];
-  } catch (error) {
-    console.error('Error fetching user emails:', error);
-    return [];
-  }
-};
-
-export const getAllUsernames = async (): Promise<string[]> => {
-  try {
-    const snapshot = await get(ref(db, 'users'));
-
-    if (snapshot.exists()) {
-      const users = snapshot.val();
-      const usernames = Object.values(
-        users as Record<string, databaseUser>
-      ).map((user) => user.username);
-      return usernames;
-    }
-    return [];
-  } catch (error) {
-    console.error('Error fetching user usernames:', error);
-    return [];
-  }
-};
-
 export const getAllUsers = async (): Promise<databaseUser[]> => {
   try {
     const snapshot = await get(ref(db, 'users'));

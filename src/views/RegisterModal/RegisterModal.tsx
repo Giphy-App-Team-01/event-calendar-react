@@ -46,7 +46,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
     try {
       validateFirstAndLastName(formData.firstName, formData.lastName);
       await validateUsername(formData.username);
-      validatePhoneNumber(formData.phoneNumber);
+      await validatePhoneNumber(formData.phoneNumber);
       await validateEmail(formData.email);
       validatePassword(formData.password);
       validatePasswordsMatch(formData.password, formData.confirmPassword);
