@@ -78,15 +78,16 @@ const SingleEventView: React.FC = () => {
 
   const handleSaveEdit = async () => {
     try {
-      
-      validateTitle(formData.title || '') 
-      validateDescription(formData.description || '') 
-      validateLocation(formData.location || '')
-  
+      validateTitle(formData.title || '');
+      validateDescription(formData.description || '');
+      validateLocation(formData.location || '');
+
       if (event) {
-      await updateEvent(event.id, formData);
+        await updateEvent(event.id, formData);
       }
-      setEvent((prev: Event | null) => (prev ? { ...prev, ...formData } : prev));
+      setEvent((prev: Event | null) =>
+        prev ? { ...prev, ...formData } : prev
+      );
       setIsEditOpen(false);
     } catch (error) {
       if (error instanceof Error) {
@@ -134,7 +135,6 @@ const SingleEventView: React.FC = () => {
     return <p className="text-center text-gray-600">Loading event...</p>;
   if (!event)
     return <p className="text-center text-red-500">Event not found.</p>;
-
 
   return (
     <div className="min-h-screen py-5">
@@ -205,26 +205,26 @@ const SingleEventView: React.FC = () => {
           </div>
         </div>
 
-      
         <div className="mt-8">
-          {authUser?.uid && event.participants?.[authUser.uid] ? (
-            <Button
-              className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
-              onClick={handleLeaveEvent}
-            >
-              <XCircle className="w-6 h-6" /> Leave Event
-            </Button>
-          ) : (
-            <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
-              onClick={handleJoinEvent}
-            >
-              <CalendarPlus className="w-6 h-6" /> Add to Calendar
-            </Button>
-          )}
+          {authUser?.uid &&
+            authUser.uid !== event.creatorId &&
+            (event.participants?.[authUser.uid] ? (
+              <Button
+                className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
+                onClick={handleLeaveEvent}
+              >
+                <XCircle className="w-6 h-6" /> Leave Event
+              </Button>
+            ) : (
+              <Button
+                className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
+                onClick={handleJoinEvent}
+              >
+                <CalendarPlus className="w-6 h-6" /> Add to Calendar
+              </Button>
+            ))}
         </div>
 
-  
         {isEditOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg backdrop-brightness-75">
             <div className="bg-white p-6 rounded-lg shadow-xl w-96">
@@ -297,7 +297,14 @@ const SingleEventView: React.FC = () => {
               <select
                 value={formData.recurrence}
                 onChange={(e) =>
-                  setFormData({ ...formData, recurrence: e.target.value as 'daily' | 'weekly' | 'monthly' | undefined })
+                  setFormData({
+                    ...formData,
+                    recurrence: e.target.value as
+                      | 'daily'
+                      | 'weekly'
+                      | 'monthly'
+                      | undefined,
+                  })
                 }
                 className="w-full p-2 border border-gray-300 rounded-md mb-4 text-gray-900"
               >
