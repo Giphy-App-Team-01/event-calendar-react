@@ -382,3 +382,65 @@ export const getUserOwnedAndJoinedEvents = async (
     return [];
   }
 };
+
+
+
+export const getEventById = async (eventId: string) => {
+  try {
+    const eventSnapshot = await get(ref(db, `events/${eventId}`));
+    return eventSnapshot.exists() ? { id: eventId, ...eventSnapshot.val() } : null;
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    throw new Error('Failed to fetch event');
+  }
+};
+
+
+export const deleteEvent = async (eventId: string): Promise<void> => {
+  try {
+    await remove(ref(db, `events/${eventId}`));
+    console.log(`Event ${eventId} deleted successfully`);
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    throw new Error('Failed to delete event');
+  }
+};
+
+
+export const updateEvent = async (eventId: string, updatedData: Partial<Event>) => {
+  try {
+    await update(ref(db, `events/${eventId}`), updatedData);
+  } catch (error) {
+    console.error('Error updating event:', error);
+  }
+};
+
+
+
+export const joinEvent = async (eventId: string, userId: string) => {
+  try {
+    const updates: Record<string, boolean> = {};
+    updates[`events/${eventId}/participants/${userId}`] = true; 
+
+    await update(ref(db), updates);
+    console.log(`User ${userId} joined event ${eventId}`);
+  } catch (error) {
+    console.error("Error joining event:", error);
+    throw error;
+  }
+};
+
+
+
+export const leaveEvent = async (eventId: string, userId: string) => {
+  const eventRef = ref(db, `events/${eventId}/participants/${userId}`);
+
+  try {
+    await remove(eventRef);
+    console.log(`User ${userId} left event ${eventId}`);
+  } catch (error) {
+    console.error("Error leaving event:", error);
+    throw error;
+  }
+};
+

@@ -1,6 +1,7 @@
 import React from 'react';
 import './SingleEventItemCard.css';
 import { Clock, Pin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface EventProps {
   event: {
@@ -9,17 +10,17 @@ interface EventProps {
     end: string;
     location: string;
     image?: string;
+    eventId: string;
   };
-  className?: string;
+
 }
 
-const SingleEventItemCard: React.FC<EventProps> = ({ event, className }) => {
+const SingleEventItemCard: React.FC<EventProps> = ({ event }) => {
+  const navigate = useNavigate();
   return (
     <div
-      className={
-        className +
-        'single-event-item-card bg-white shadow-md rounded-lg overflow-hidden'
-      }
+      className={'single-event-item-card bg-white shadow-md rounded-lg overflow-hidden cursor-pointer'}
+      onClick={() => navigate(`/event/${event.eventId}`)}
     >
       {event.image && (
         <img
