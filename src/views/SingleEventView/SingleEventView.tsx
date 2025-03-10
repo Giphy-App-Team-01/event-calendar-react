@@ -7,15 +7,18 @@ import {
   validateDescription,
   validateLocation,
 } from '../../utils/validationHelpers';
-import { Event } from '../../types/interfaces';
+import { databaseUser, Event } from '../../types/interfaces';
 import { format, parseISO } from 'date-fns';
-import { Trash, CalendarPlus, Pencil, XCircle } from 'lucide-react';
+import { Trash, CalendarPlus, Pencil, XCircle, UserPlus } from 'lucide-react';
 import {
   deleteEvent,
   getEventById,
+  getInvitedUsersForEvent,
   getUserById,
+  getUserFriends,
   joinEvent,
   leaveEvent,
+  sendEventInvite,
   updateEvent,
 } from '../../services/db-service';
 import EventMap from '../EventMap/EventMap';
@@ -29,6 +32,10 @@ const SingleEventView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [organizer, setOrganizer] = useState<string | null>(null);
+  const [friends, setFriends] = useState<databaseUser[]>([]);
+  const [isInvitePopupOpen, setIsInvitePopupOpen] = useState(false);
+  const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
+
   const [formData, setFormData] = useState<Partial<Event>>({
     title: '',
     description: '',
@@ -56,6 +63,19 @@ const SingleEventView: React.FC = () => {
           end: eventData.end,
           recurrence: eventData.recurrence || 'None',
         });
+
+        if (authUser?.uid === eventData.creatorId) {
+          if (authUser) {
+            const friendsList = await getUserFriends(authUser.uid);
+            setFriends(
+              friendsList.filter(
+                (friend) => friend.allowEventInvites
+              ) as databaseUser[]
+            );
+          }
+          const invitedUsersList = await getInvitedUsersForEvent(eventData.id);
+          setInvitedUsers(invitedUsersList);
+        }
       } catch (error) {
         console.error('Error fetching event:', error);
       } finally {
@@ -64,7 +84,7 @@ const SingleEventView: React.FC = () => {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, authUser]);
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
@@ -130,6 +150,20 @@ const SingleEventView: React.FC = () => {
       console.error('Error leaving event:', error);
     }
   };
+  const handleSendEventInvite = async (friendId: string) => {
+    if (!event || !authUser) return;
+
+    try {
+      await sendEventInvite(authUser.uid, friendId, event.id);
+      toast.success('Invitation sent!');
+
+      // Добавяме потребителя към списъка с поканени
+      setInvitedUsers((prev) => [...prev, friendId]);
+    } catch (error) {
+      console.error('Error sending invite:', error);
+      toast.error('Failed to send invitation.');
+    }
+  };
 
   if (loading)
     return <p className="text-center text-gray-600">Loading event...</p>;
@@ -143,6 +177,13 @@ const SingleEventView: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
           {(authUser?.uid === event.creatorId || dbUser?.isAdmin) && (
             <div className="flex gap-2">
+              <Button
+                className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer shadow-md transition-all duration-200"
+                onClick={() => setIsInvitePopupOpen(true)}
+              >
+                <UserPlus className="w-5 h-5" /> Invite Friends
+              </Button>
+
               <Button
                 className="bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer"
                 onClick={() => setIsEditOpen(true)}
@@ -158,7 +199,6 @@ const SingleEventView: React.FC = () => {
             </div>
           )}
         </div>
-
         <img
           src={event.image}
           alt={event.title}
@@ -326,6 +366,74 @@ const SingleEventView: React.FC = () => {
                   onClick={handleSaveEdit}
                 >
                   Save Changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        {isInvitePopupOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300 ease-out">
+            <div className="bg-white p-6 rounded-lg shadow-2xl w-96 transform scale-100 hover:scale-105 transition-transform duration-300 ease-out">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 text-center">
+                Invite Friends 🎉
+              </h2>
+
+              {friends.length === 0 ? (
+                <p className="text-gray-500 text-sm text-center">
+                  No friends available to invite.
+                </p>
+              ) : (
+                <ul className="space-y-3">
+                  {friends.map((friend) => {
+                    const isAlreadyParticipant =
+                      event?.participants?.[friend.uid];
+
+                    return (
+                      <li
+                        key={friend.uid}
+                        className="flex justify-between items-center p-3 bg-gray-100 rounded-lg shadow"
+                      >
+                        <div>
+                          <p className="text-gray-900 font-medium">
+                            {friend.firstName} {friend.lastName}
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            @{friend.username}
+                          </p>
+                        </div>
+
+                        <Button
+                          className={`px-3 py-1 rounded-md text-sm ${
+                            isAlreadyParticipant
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : invitedUsers.includes(friend.uid)
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-blue-500 hover:bg-blue-600 text-white'
+                          }`}
+                          onClick={() => handleSendEventInvite(friend.uid)}
+                          disabled={
+                            isAlreadyParticipant ||
+                            invitedUsers.includes(friend.uid)
+                          }
+                        >
+                          {isAlreadyParticipant
+                            ? 'Already Joined'
+                            : invitedUsers.includes(friend.uid)
+                            ? 'Pending'
+                            : 'Invite'}
+                        </Button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <div className="mt-5 flex justify-center">
+                <Button
+                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md transition-all"
+                  onClick={() => setIsInvitePopupOpen(false)}
+                >
+                  Close
                 </Button>
               </div>
             </div>

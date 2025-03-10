@@ -444,3 +444,35 @@ export const leaveEvent = async (eventId: string, userId: string) => {
   }
 };
 
+export const getUserFriends = async (userId: string) => {
+  const userRef = ref(db, `users/${userId}/contacts`);
+  const snapshot = await get(userRef);
+  if (!snapshot.exists()) return [];
+  
+  const friendIds = Object.keys(snapshot.val());
+  const friends = await Promise.all(friendIds.map(async (friendId) => {
+    const friendData = await getUserById(friendId);
+    return { uid: friendId, ...friendData };
+  }));
+
+  return friends;
+};
+
+
+export const getInvitedUsersForEvent = async (eventId: string): Promise<string[]> => {
+  try {
+    const notificationsSnapshot = await get(ref(db, 'notifications'));
+    const notificationsData = notificationsSnapshot.val();
+
+    if (!notificationsData) return [];
+
+    return Object.entries(notificationsData)
+      .filter(([_, notification]) => 
+        (notification as Notification).type === 'event_invite' && (notification as Notification).eventId === eventId
+      )
+      .map(([_, notification]) => (notification as Notification).userId);
+  } catch (error) {
+    console.error("Error fetching invited users:", error);
+    return [];
+  }
+};
