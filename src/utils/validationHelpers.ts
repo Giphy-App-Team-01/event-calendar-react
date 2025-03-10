@@ -1,17 +1,21 @@
 import {
   MAX_ADDRESS_LENGTH,
+  MAX_DESC_LENGTH,
   MAX_FIRST_LAST_NAME_LENGTH,
+  MAX_LOCATION_LENGTH,
   MAX_PASSWORD_LENGTH,
+  MAX_TITLE_LENGTH,
   MAX_USERNAME_LENGTH,
   MIN_ADDRESS_LENGTH,
+  MIN_DESC_LENGTH,
   MIN_FIRST_LAST_NAME_LENGTH,
+  MIN_LOCATION_LENGTH,
   MIN_PASSWORD_LENGTH,
   MIN_PHONE_NUMBER_LENGTH,
+  MIN_TITLE_LENGTH,
   MIN_USERNAME_LENGTH,
 } from '../common/constants';
-import {
-  getAllUsers,
-} from '../services/db-service';
+import { getAllUsers } from '../services/db-service';
 
 export const validateFirstAndLastName = (
   firstName: string,
@@ -20,11 +24,11 @@ export const validateFirstAndLastName = (
   const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)*$/; // Only letters and spaces
 
   if (!nameRegex.test(firstName)) {
-    throw new Error("First name must contain only letters and spaces.");
+    throw new Error('First name must contain only letters and spaces.');
   }
 
   if (!nameRegex.test(lastName)) {
-    throw new Error("Last name must contain only letters and spaces.");
+    throw new Error('Last name must contain only letters and spaces.');
   }
 
   if (firstName.length < MIN_FIRST_LAST_NAME_LENGTH) {
@@ -54,10 +58,7 @@ export const validateFirstAndLastName = (
   return true;
 };
 
-
 export const validateUsername = async (username: string) => {
-
-
   const users = await getAllUsers();
 
   const isUsernameTaken = users.some((user) => user.username === username);
@@ -82,8 +83,6 @@ export const validateUsername = async (username: string) => {
 };
 
 export const validatePhoneNumber = async (phoneNumber: string) => {
-
-
   const phoneRegex = /^[0-9]+$/;
   if (!phoneRegex.test(phoneNumber)) {
     throw new Error('Phone number must contain only digits.');
@@ -95,9 +94,7 @@ export const validatePhoneNumber = async (phoneNumber: string) => {
     );
   }
 
-
   const users = await getAllUsers();
-
 
   const isPhoneTaken = users.some((user) => user.phoneNumber === phoneNumber);
 
@@ -109,10 +106,8 @@ export const validatePhoneNumber = async (phoneNumber: string) => {
 };
 
 export const validateEmail = async (email: string) => {
- 
   const users = await getAllUsers();
 
- 
   const isEmailTaken = users.some((user) => user.email === email);
 
   if (isEmailTaken) {
@@ -171,4 +166,37 @@ export const validateAddress = (address: string) => {
       `Address must be at least ${MIN_ADDRESS_LENGTH} characters long`
     );
   }
+};
+
+export const validateTitle = (title: string) => {
+  if (title.length < MIN_TITLE_LENGTH || title.length > MAX_TITLE_LENGTH) {
+    throw new Error(
+      `Title must be between ${MIN_TITLE_LENGTH} and ${MAX_TITLE_LENGTH} characters.`
+    );
+  }
+  return true;
+};
+
+export const validateDescription = (description: string) => {
+  if (
+    description.length < MIN_DESC_LENGTH ||
+    description.length > MAX_DESC_LENGTH
+  ) {
+    throw new Error(
+      `Description must be between ${MIN_DESC_LENGTH} and ${MAX_DESC_LENGTH} characters.`
+    );
+  }
+  return true;
+};
+
+export const validateLocation = (location: string) => {
+  if (
+    location.length < MIN_LOCATION_LENGTH ||
+    location.length > MAX_LOCATION_LENGTH
+  ) {
+    throw new Error(
+      `Location must be between ${MIN_LOCATION_LENGTH} and ${MAX_LOCATION_LENGTH} characters.`
+    );
+  }
+  return true;
 };

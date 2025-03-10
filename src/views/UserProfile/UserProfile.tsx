@@ -439,7 +439,7 @@ const Profile: React.FC = () => {
               } cursor-pointer`}
               onClick={() => setActiveTab('invitedEvents')}
             >
-              Events I'm Invited To
+             Joined Events
             </Button>
           )}
         </div>
