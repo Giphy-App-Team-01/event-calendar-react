@@ -18,6 +18,7 @@ import { AppContext } from './context/app.context';
 import { ToastContainer } from 'react-toastify';
 import AuthGuard from './hoc/AuthGuard';
 import { AppState, AppContextType } from './types/interfaces';
+import BlockCheck from './hoc/BlockCheck';
 
 
 const App: React.FC = () => {
@@ -84,6 +85,7 @@ const App: React.FC = () => {
   return (
     <AppContext.Provider value={{ ...appState, setAppState } as AppContextType}>
       <BrowserRouter>
+      <BlockCheck>
         <Header
           isLoginOpen={isLoginOpen}
           setIsLoginOpen={setIsLoginOpen}
@@ -148,6 +150,7 @@ const App: React.FC = () => {
           </Routes>
         </Container>
         <Footer />
+        </BlockCheck>
       </BrowserRouter>
     </AppContext.Provider>
   );

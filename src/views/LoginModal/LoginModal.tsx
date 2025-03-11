@@ -3,6 +3,8 @@ import { loginUser } from '../../services/auth-service';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Button from '../../components/Button/Button';
+import { getUserById } from '../../services/db-service';
+import BlockedPopup from '../../components/BlockedPopup/BlockedPopup';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -12,6 +14,8 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isBlockedAccount, setIsBlockedAccount] = useState(false);
+  const [showBlockedPopup, setShowBlockedPopup] = useState(false);  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,18 +27,40 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
     try {
       setLoading(true);
-      await loginUser(formData.email, formData.password);
-      toast.success('Login successful',{
-        autoClose: 1000
-      });
+      const userCredential = await loginUser(formData.email, formData.password);
+      const loggedUserId = userCredential.user.uid;
+      const userRecord = await getUserById(loggedUserId);
+
+      if (userRecord?.isBlocked) {
+        setIsBlockedAccount(true);
+        setShowBlockedPopup(true);
+        onClose(); 
+        return;
+      }
+
+      toast.success('Login successful', { autoClose: 1000 });
       onClose();
       navigate('/my-calendar');
-    } catch (error) {
-      console.log(error);
+    } catch (error: unknown) {
+      console.error(error);
+      toast.error('Failed to login.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (isBlockedAccount) {
+    return showBlockedPopup ? (
+      <div className={`modal ${isOpen ? 'modal-open' : ''}`}>
+        <BlockedPopup onClose={() => {
+            setShowBlockedPopup(false);
+            setIsBlockedAccount(false);
+        }} />
+      </div>
+    ) : null;
+  }
+  
+  
 
   return (
     <div className={`modal ${isOpen ? 'modal-open' : ''}`}>
