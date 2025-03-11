@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Notifications/>
                 <Button
                   onClick={handleLogout}
-                  className="bg-red-400 hover:bg-red-500 text-white"
+                  className="bg-red-400 hover:bg-red-500 text-white cursor-pointer"
                 >
                   Logout
                 </Button>

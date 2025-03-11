@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
-import "leaflet/dist/leaflet.css";
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { LatLngExpression } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { AlertTriangle } from 'lucide-react';
 
 interface EventMapProps {
   address: string;
 }
 
 const EventMap: React.FC<EventMapProps> = ({ address }) => {
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!address || address.trim() === "") {
+    if (!address || address.trim() === '') {
       setError(true);
       setLoading(false);
       return;
@@ -22,7 +25,9 @@ const EventMap: React.FC<EventMapProps> = ({ address }) => {
     const fetchCoordinates = async () => {
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            address
+          )}`
         );
         const data = await response.json();
 
@@ -34,7 +39,7 @@ const EventMap: React.FC<EventMapProps> = ({ address }) => {
           setError(true);
         }
       } catch (err) {
-        console.error("Error fetching coordinates:", err);
+        console.error('Error fetching coordinates:', err);
         setError(true);
       } finally {
         setLoading(false);
@@ -48,21 +53,24 @@ const EventMap: React.FC<EventMapProps> = ({ address }) => {
     <div className="w-full h-64 mt-4 relative rounded-lg overflow-hidden shadow-md">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <p className="text-gray-600 font-medium animate-pulse">📍 Loading map...</p>
+          <p className="text-gray-600 font-medium animate-pulse">
+            📍 Loading map...
+          </p>
         </div>
       )}
 
-     
       {error && !loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
-          <p className="text-red-600 font-semibold">❌ Location not found</p>
-          <p className="text-gray-500 text-sm mt-1">Check if the address is correct.</p>
+          <div className="flex items-center gap-2 text-red-600 font-semibold">
+            <AlertTriangle className="w-5 h-5" />
+            <span>Unable to display location</span>
+          </div>
         </div>
       )}
       {coords && !error && !loading && (
         <MapContainer
-        center={[coords.lat, coords.lng] as LatLngExpression}
-        zoom={13}
+          center={[coords.lat, coords.lng] as LatLngExpression}
+          zoom={13}
           className="w-full h-full rounded-lg"
           scrollWheelZoom={false}
         >

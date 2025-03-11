@@ -26,9 +26,6 @@ const BlockCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
-  console.log('BlockCheck rendered',authUser);
-  
-
   return (
     <>
       {showModal && <BlockedPopup onClose={handleClose} />}

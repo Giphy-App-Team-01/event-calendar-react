@@ -356,13 +356,13 @@ const SingleEventView: React.FC = () => {
 
               <div className="flex justify-end gap-2">
                 <Button
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md cursor-pointer"
                   onClick={() => setIsEditOpen(false)}
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="bg-green-500 text-white px-4 py-2 rounded-md"
+                  className="bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer"
                   onClick={handleSaveEdit}
                 >
                   Save Changes
@@ -408,7 +408,7 @@ const SingleEventView: React.FC = () => {
                               ? 'bg-gray-400 cursor-not-allowed'
                               : invitedUsers.includes(friend.uid)
                               ? 'bg-gray-400 cursor-not-allowed'
-                              : 'bg-blue-500 hover:bg-blue-600 text-white'
+                              : 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
                           }`}
                           onClick={() => handleSendEventInvite(friend.uid)}
                           disabled={
@@ -430,7 +430,7 @@ const SingleEventView: React.FC = () => {
 
               <div className="mt-5 flex justify-center">
                 <Button
-                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md transition-all"
+                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md transition-all cursor-pointer"
                   onClick={() => setIsInvitePopupOpen(false)}
                 >
                   Close

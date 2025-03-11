@@ -54,7 +54,7 @@ const LandingPage: React.FC<HeaderProps> = ({
             {authUser ? (
               <Button
               onClick={() => navigation('/my-calendar')}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white transition"
+              className="bg-cyan-500 hover:bg-cyan-600 text-white transition cursor-pointer"
               >
               Go To Calendar
               </Button>

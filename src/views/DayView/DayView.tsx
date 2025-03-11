@@ -8,6 +8,7 @@ import {
 } from 'date-fns';
 import { getOccurrenceStart, occursOnDay } from '../../utils/calendarHelpers';
 import { Event } from '../../types/interfaces';
+import { useNavigate } from 'react-router-dom';
 
 const DayView = ({
   currentDate,
@@ -19,6 +20,7 @@ const DayView = ({
   const dayStart = startOfDay(currentDate);
   const dayEnd = endOfDay(currentDate);
   const hours = eachHourOfInterval({ start: dayStart, end: dayEnd });
+  const navigate = useNavigate();
 
   return (
     <div className="border rounded-lg shadow-lg overflow-hidden bg-white">
@@ -59,14 +61,14 @@ const DayView = ({
               <div
                 key={idx}
                 className="absolute left-16 right-4 bg-blue-500 text-white rounded p-1 text-xs 
-               shadow-xl ring-1 ring-white"
+               shadow-xl ring-1 ring-white cursor-pointer"
                 style={{
                   top: `${topOffset}%`,
                   height: `${eventHeight}%`,
                   minHeight: '30px',
                   zIndex: idx + 1,
                 }}
-                onClick={() => console.log(event)}
+                onClick={() => navigate(`/event/${event.id}`)}
               >
                 <div className="truncate">{event.title}</div>
                 <div className="text-[0.7em]">
