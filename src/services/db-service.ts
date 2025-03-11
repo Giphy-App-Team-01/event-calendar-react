@@ -10,6 +10,7 @@ import {
 } from 'firebase/database';
 import { db } from '../../firebase.config';
 import { databaseUser, Notification, Event } from '../types/interfaces';
+import { PAGE_SIZE } from '../common/constants';
 
 export const saveUserToDatabase = async (
   uid: string,
@@ -474,5 +475,88 @@ export const getInvitedUsersForEvent = async (eventId: string): Promise<string[]
   } catch (error) {
     console.error("Error fetching invited users:", error);
     return [];
+  }
+};
+
+
+export const paginatedUsers = async (
+  searchTerm: string,
+  page: number
+): Promise<{ data: databaseUser[]; hasMore: boolean }> => {
+  try {
+    const snapshot = await get(ref(db, 'users'));
+    if (!snapshot.exists()) {
+      return { data: [], hasMore: false };
+    }
+
+    const usersObj = snapshot.val();
+    console.log('usersobj',usersObj);
+    
+
+    const usersArr: databaseUser[] = Object.keys(usersObj).map((uid) => ({
+      uid,
+      ...usersObj[uid],
+    }));
+
+
+    const lowerSearch = searchTerm.toLowerCase();
+    const filtered = usersArr.filter((user) => {
+      return (
+        user.username?.toLowerCase().includes(lowerSearch) ||
+        user.firstName?.toLowerCase().includes(lowerSearch) ||
+        user.lastName?.toLowerCase().includes(lowerSearch) ||
+        user.email?.toLowerCase().includes(lowerSearch)
+      );
+    });
+
+    // Load more
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const pageData = filtered.slice(startIndex, endIndex);
+
+    return {
+      data: pageData,
+      hasMore: endIndex < filtered.length, // Check if there are more users
+    };
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return { data: [], hasMore: false };
+  }
+};
+
+export const paginatedEvents = async (
+  searchTerm: string,
+  page: number
+): Promise<{ data: Event[]; hasMore: boolean }> => {
+  try {
+    const snapshot = await get(ref(db, 'events'));
+    if (!snapshot.exists()) {
+      return { data: [], hasMore: false };
+    }
+
+    const eventsObj = snapshot.val();
+    const eventsArr: Event[] = Object.keys(eventsObj).map((id) => ({
+      id,
+      ...eventsObj[id],
+    }));
+
+    //Filter events by title
+    const lowerSearch = searchTerm.toLowerCase();
+    const filtered = eventsArr.filter((event) => {
+      return event.title?.toLowerCase().includes(lowerSearch);
+    });
+
+    //Load more
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const pageData = filtered.slice(startIndex, endIndex);
+
+    return {
+      data: pageData,
+      hasMore: endIndex < filtered.length, // Check if there are more events
+    };
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return { data: [], hasMore: false };
   }
 };

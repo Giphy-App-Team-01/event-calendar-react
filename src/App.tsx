@@ -1,7 +1,7 @@
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Container from './components/Container/Container';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './views/LandingPage/LandingPage';
 import NotFound from './views/NotFound/NotFound';
 import MyCalendar from './views/MyCalendar/MyCalendar';
@@ -144,7 +144,7 @@ const App: React.FC = () => {
               path='/admin-board'
               element={
                 <AuthGuard>
-                  <AdminDashboard />
+                  {appState.dbUser?.isAdmin ? <AdminDashboard /> : <Navigate to='/' />}
                 </AuthGuard>
               }
             />
