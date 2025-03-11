@@ -30,10 +30,11 @@ const Header: React.FC<HeaderProps> = ({
   setIsRegisterOpen,
 }) => {
   const navigate = useNavigate();
-  const { authUser } = useContext(AppContext) as {
-    authUser: { uid: string } | null;
-  };
 
+  const { authUser, dbUser } = useContext(AppContext) as {
+    authUser: { uid: string } | null;
+    dbUser: { isAdmin: boolean } | null;
+  };
   const handleLogout = async () => {
     try {
       await logoutUser();
@@ -94,12 +95,12 @@ const Header: React.FC<HeaderProps> = ({
                   </Link>
                 </li>
                 <li>
-                  <Link
+                  {dbUser?.isAdmin && <Link
                     to="/admin-board"
                     className="hover:text-teal-700 transition"
                   >
                     Admin Dashboard
-                  </Link>
+                  </Link>}
                 </li>
               </ul>
             )}
