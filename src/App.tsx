@@ -19,6 +19,8 @@ import { ToastContainer } from 'react-toastify';
 import AuthGuard from './hoc/AuthGuard';
 import { AppState, AppContextType } from './types/interfaces';
 import BlockCheck from './hoc/BlockCheck';
+import ErrorMessage from './components/ErrorMessage/ErrorMessage';
+import Loading from './components/Loading/Loading';
 
 
 const App: React.FC = () => {
@@ -75,11 +77,10 @@ const App: React.FC = () => {
   }, [user, loading]);
 
   if (appState.loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
-
   if (error) {
-    return <div>Error</div>;
+    return <ErrorMessage error={error} />;
   }
 
   return (
