@@ -9,7 +9,7 @@ import {
   update,
 } from 'firebase/database';
 import { db } from '../../firebase.config';
-import { databaseUser, Notification, Event } from '../types/interfaces';
+import { databaseUser, Notification, Event, NewEvent } from '../types/interfaces';
 import { PAGE_SIZE } from '../common/constants';
 
 export const saveUserToDatabase = async (
@@ -558,5 +558,19 @@ export const paginatedEvents = async (
   } catch (error) {
     console.error('Error fetching events:', error);
     return { data: [], hasMore: false };
+  }
+};
+
+export const createEvent = async (newEvent: NewEvent): Promise<string> => {
+  console.log('newEvent',newEvent);
+  
+  try {
+    const eventsRef = ref(db, 'events');
+    const newEventRef = await push(eventsRef, newEvent);
+    await update(newEventRef, { eventId: newEventRef.key });
+    return newEventRef.key || '';
+  } catch (error) {
+    console.error('Error creating event:', error);
+    throw error;
   }
 };

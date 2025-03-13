@@ -68,7 +68,7 @@ const DayView = ({
                   minHeight: '30px',
                   zIndex: idx + 1,
                 }}
-                onClick={() => navigate(`/event/${event.id}`)}
+                onClick={() => navigate(`/event/${event.eventId}`)}
               >
                 <div className="truncate">{event.title}</div>
                 <div className="text-[0.7em]">

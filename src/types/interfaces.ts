@@ -11,12 +11,34 @@ export interface Event {
     [key: string]: boolean;
   };
   recurrence?: 'daily' | 'weekly' | 'monthly';
-  mapUrl: string;
   location: string;
   description: string;
   image: string;
   eventId: string;
   visibility: string;
+}
+
+export interface FormValues {
+  eventName: string;
+  coverImage: FileList;
+  start: string; 
+  end: string;   
+  description: string;
+  location: string;
+  recurrence: 'none' | 'daily' | 'weekly' | 'monthly';
+  visibility: string;
+}
+
+export interface NewEvent {
+  title: string;
+  start: string;
+  end: string;
+  description: string;
+  location: string;
+  image: string;
+  visibility: string;
+  creatorId: string;
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly';
 }
 
 //Interface fo user which is returned by Firebase

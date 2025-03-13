@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import { format, addDays, addWeeks, addMonths } from 'date-fns';
-import { mockEvents } from './mockEvents';
 import Button from '../../components/Button/Button';
 import MonthView from '../MonthView/MonthView';
 import WeekView from '../WeekView/WeekView';
