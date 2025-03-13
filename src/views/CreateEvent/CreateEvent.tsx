@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import DefaultCover from '../../assets/images/event-cover.webp';
 import { NewEvent, FormValues } from '../../types/interfaces';
+import { isValid, parse } from 'date-fns';
 
 const CreateEvent: React.FC = () => {
   const { authUser } = useContext(AppContext);
@@ -18,6 +19,7 @@ const CreateEvent: React.FC = () => {
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -32,7 +34,7 @@ const CreateEvent: React.FC = () => {
       if (file) {
         imageUrl = await uploadImageToCloudinary(file);
       }
-  
+
       const newEvent: NewEvent = {
         title: data.eventName,
         start: data.start,
@@ -40,31 +42,55 @@ const CreateEvent: React.FC = () => {
         description: data.description,
         location: data.location,
         image: imageUrl || DefaultCover,
-        visibility: data.visibility,  
+        visibility: data.visibility,
         creatorId: authUser?.uid || '',
       };
-  
+
       if (data.recurrence !== 'none') {
         newEvent.recurrence = data.recurrence;
       }
-  
+
       const eventId = await createEvent(newEvent);
       toast.success('Event created successfully!', { autoClose: 1000 });
-      
+
       setTimeout(() => {
-        navigate(`/event/${eventId}`); 
+        navigate(`/event/${eventId}`);
       }, 1500);
     } catch (error) {
       console.error('Error creating event:', error);
       toast.error('Failed to create event.');
     }
   };
-  
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
       setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const currentYear = new Date().getFullYear();
+
+  const handleDateTimeBlur = (
+    e: React.FocusEvent<HTMLInputElement>,
+    setValue: (
+      name: keyof FormValues,
+      value: string,
+      options?: { shouldValidate: boolean }
+    ) => void
+  ) => {
+    const value = e.target.value; 
+    if (!value) return;
+    const parts = value.split('-'); 
+    const enteredYear = parseInt(parts[0], 10);
+    if (enteredYear < currentYear) {
+  
+      parts[0] = currentYear.toString();
+      const newValue = parts.join('-');
+      
+      setValue(e.target.name as keyof FormValues, newValue, {
+        shouldValidate: true,
+      });
     }
   };
 
@@ -97,7 +123,6 @@ const CreateEvent: React.FC = () => {
             <p className={errorClasses}>{errors.eventName.message}</p>
           )}
         </div>
-
         {/* COVER IMAGE */}
         <div className="form-control">
           <label className="label font-medium text-gray-700">
@@ -105,10 +130,7 @@ const CreateEvent: React.FC = () => {
           </label>
           <div className="relative group">
             <img
-              src={
-                previewImage ||
-                DefaultCover
-              }
+              src={previewImage || DefaultCover}
               alt="Cover Preview"
               className="w-full h-72 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg"
             />
@@ -136,7 +158,21 @@ const CreateEvent: React.FC = () => {
           <input
             type="datetime-local"
             className={inputClasses}
-            {...register('start', { required: 'Start Date/Time is required' })}
+            {...register('start', {
+              required: 'Start Date/Time is required',
+              onBlur: (e) => handleDateTimeBlur(e, setValue),
+              validate: (value: string) => {
+                const parsedDate = parse(
+                  value,
+                  "yyyy-MM-dd'T'HH:mm",
+                  new Date()
+                );
+                if (!isValid(parsedDate)) {
+                  return 'Invalid date/time format. Use YYYY-MM-DDTHH:mm';
+                }
+                return true;
+              },
+            })}
           />
           {errors.start && (
             <p className={errorClasses}>{errors.start.message}</p>
@@ -149,7 +185,21 @@ const CreateEvent: React.FC = () => {
           <input
             type="datetime-local"
             className={inputClasses}
-            {...register('end', { required: 'End Date/Time is required' })}
+            {...register('end', {
+              required: 'End Date/Time is required',
+              onBlur: (e) => handleDateTimeBlur(e, setValue),
+              validate: (value: string) => {
+                const parsedDate = parse(
+                  value,
+                  "yyyy-MM-dd'T'HH:mm",
+                  new Date()
+                );
+                if (!isValid(parsedDate)) {
+                  return 'Invalid date/time format. Use YYYY-MM-DDTHH:mm';
+                }
+                return true;
+              },
+            })}
           />
           {errors.end && <p className={errorClasses}>{errors.end.message}</p>}
         </div>
@@ -173,7 +223,6 @@ const CreateEvent: React.FC = () => {
             <p className={errorClasses}>{errors.description.message}</p>
           )}
         </div>
-
         {/* LOCATION */}
         <div>
           <label className={labelClasses}>Location</label>
@@ -187,7 +236,6 @@ const CreateEvent: React.FC = () => {
             <p className={errorClasses}>{errors.location.message}</p>
           )}
         </div>
-
         {/* RECURRENCE */}
         <div>
           <label className={labelClasses}>Recurrence</label>
@@ -201,7 +249,6 @@ const CreateEvent: React.FC = () => {
             <option value="monthly">Monthly</option>
           </select>
         </div>
-
         {/* EVENT VISIBILITY (PUBLIC / PRIVATE) */}
         <div className="mb-5">
           <p className="text-gray-800 font-bold text-lg mb-3">
@@ -245,7 +292,6 @@ const CreateEvent: React.FC = () => {
             </label>
           </div>
         </div>
-
         {/* SUBMIT BUTTON */}
         <Button type="submit" className="btn btn-primary w-full mt-1">
           Create Event

@@ -10,7 +10,7 @@ export interface Event {
   participants?: {
     [key: string]: boolean;
   };
-  recurrence?: 'daily' | 'weekly' | 'monthly';
+  recurrence?: 'daily' | 'weekly' | 'monthly'| null;
   location: string;
   description: string;
   image: string;

@@ -98,15 +98,31 @@ const SingleEventView: React.FC = () => {
 
   const handleSaveEdit = async () => {
     try {
+   
       validateTitle(formData.title || '');
       validateDescription(formData.description || '');
       validateLocation(formData.location || '');
-
+  
+     
+      const updatedData: Partial<Event> = {
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        start: formData.start,
+        end: formData.end,
+      };
+ 
+      if (formData.recurrence && formData.recurrence.toLowerCase() !== 'none') {
+        updatedData.recurrence = formData.recurrence;
+      } else {
+        updatedData.recurrence = null;
+      }
+  
       if (event) {
-        await updateEvent(event.id, formData);
+        await updateEvent(event.id, updatedData);
       }
       setEvent((prev: Event | null) =>
-        prev ? { ...prev, ...formData } : prev
+        prev ? { ...prev, ...updatedData } : prev
       );
       setIsEditOpen(false);
     } catch (error) {
@@ -117,6 +133,7 @@ const SingleEventView: React.FC = () => {
       }
     }
   };
+  
 
   const handleJoinEvent = async () => {
     if (!event || !authUser) return;
@@ -162,6 +179,21 @@ const SingleEventView: React.FC = () => {
     } catch (error) {
       console.error('Error sending invite:', error);
       toast.error('Failed to send invitation.');
+    }
+  };
+
+  const currentYear = new Date().getFullYear();
+
+  const handleDateTimeBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value; // Очаквания формат: "YYYY-MM-DDTHH:mm" (ако има T и т.н.)
+    if (!value) return;
+    const parts = value.split('-'); // parts[0] съдържа годината
+    const enteredYear = parseInt(parts[0], 10);
+    if (enteredYear < currentYear) {
+      parts[0] = currentYear.toString();
+      const newValue = parts.join('-');
+      // Актуализираме formData чрез setFormData
+      setFormData((prev) => ({ ...prev, [e.target.name]: newValue }));
     }
   };
 
@@ -312,10 +344,12 @@ const SingleEventView: React.FC = () => {
               </label>
               <input
                 type="datetime-local"
+                name="start"
                 value={formData.start}
                 onChange={(e) =>
                   setFormData({ ...formData, start: e.target.value })
                 }
+                onBlur={handleDateTimeBlur}
                 className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
               />
 
@@ -324,10 +358,12 @@ const SingleEventView: React.FC = () => {
               </label>
               <input
                 type="datetime-local"
+                name="end"
                 value={formData.end}
                 onChange={(e) =>
                   setFormData({ ...formData, end: e.target.value })
                 }
+                onBlur={handleDateTimeBlur}
                 className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
               />
 
@@ -335,7 +371,7 @@ const SingleEventView: React.FC = () => {
                 Recurrence
               </label>
               <select
-                value={formData.recurrence}
+                value={formData.recurrence || ''}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
