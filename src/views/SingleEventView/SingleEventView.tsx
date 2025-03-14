@@ -426,6 +426,7 @@ const SingleEventView: React.FC = () => {
                       | 'daily'
                       | 'weekly'
                       | 'monthly'
+                      | 'yearly'
                       | undefined,
                   })
                 }
@@ -435,6 +436,7 @@ const SingleEventView: React.FC = () => {
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
               </select>
 
               <div className="flex justify-end gap-2">

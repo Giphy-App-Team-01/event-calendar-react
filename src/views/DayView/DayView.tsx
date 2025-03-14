@@ -1,14 +1,14 @@
 import {
   format,
-  isSameDay,
   startOfDay,
   endOfDay,
   eachHourOfInterval,
   differenceInMinutes,
 } from 'date-fns';
-import { getOccurrenceStart, occursOnDay } from '../../utils/calendarHelpers';
+import { computeEffectiveTimes, occursOnDay } from '../../utils/calendarHelpers';
 import { Event } from '../../types/interfaces';
 import { useNavigate } from 'react-router-dom';
+
 
 const DayView = ({
   currentDate,
@@ -40,31 +40,21 @@ const DayView = ({
         {events
           .filter((event) => occursOnDay(event, currentDate))
           .map((event, idx) => {
-            const originalStart = new Date(event.start);
-            const originalEnd = new Date(event.end);
-            const duration = originalEnd.getTime() - originalStart.getTime();
-            const occurrenceStart = event.recurrence
-              ? getOccurrenceStart(event, currentDate)
-              : originalStart;
-            const occurrenceEnd = new Date(
-              occurrenceStart.getTime() + duration
+            const { effectiveStart, effectiveEnd } = computeEffectiveTimes(
+              event,
+              currentDate
             );
-            const startTime =
-              occurrenceStart < dayStart ? dayStart : occurrenceStart;
-            const endTime = occurrenceEnd > dayEnd ? dayEnd : occurrenceEnd;
-            const startMinutes =
-              startTime.getHours() * 60 + startTime.getMinutes();
-            const durationMinutes = differenceInMinutes(endTime, startTime);
-            const topOffset = (startMinutes / 1440) * 100;
-            const eventHeight = (durationMinutes / 1440) * 100;
+            const durationMinutes = differenceInMinutes(effectiveEnd, effectiveStart);
             return (
               <div
                 key={idx}
-                className="absolute left-16 right-4 bg-blue-500 text-white rounded p-1 text-xs 
-               shadow-xl ring-1 ring-white cursor-pointer"
+                className="absolute left-16 right-4 bg-blue-500 text-white rounded p-1 text-xs shadow-xl ring-1 ring-white cursor-pointer"
                 style={{
-                  top: `${topOffset}%`,
-                  height: `${eventHeight}%`,
+                  top: `${
+                    ((effectiveStart.getHours() * 60 + effectiveStart.getMinutes()) / 1440) *
+                    100
+                  }%`,
+                  height: `${(durationMinutes / 1440) * 100}%`,
                   minHeight: '30px',
                   zIndex: idx + 1,
                 }}
@@ -72,8 +62,7 @@ const DayView = ({
               >
                 <div className="truncate">{event.title}</div>
                 <div className="text-[0.7em]">
-                  {format(startTime, 'HH:mm')} - {format(endTime, 'HH:mm')}
-                  {!isSameDay(originalStart, originalEnd) && ' (cont.)'}
+                  {format(effectiveStart, 'HH:mm')} - {format(effectiveEnd, 'HH:mm')}
                 </div>
               </div>
             );
@@ -82,6 +71,5 @@ const DayView = ({
     </div>
   );
 };
-
 
 export default DayView;

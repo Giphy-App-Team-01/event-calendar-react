@@ -58,7 +58,11 @@ const CreateEvent: React.FC = () => {
       }, 1500);
     } catch (error) {
       console.error('Error creating event:', error);
-      toast.error(error.message);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unknown error occurred.');
+      }
     }
   };
 
@@ -269,6 +273,7 @@ const CreateEvent: React.FC = () => {
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
           </select>
         </div>
         {/* EVENT VISIBILITY (PUBLIC / PRIVATE) */}
