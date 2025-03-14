@@ -58,7 +58,7 @@ const CreateEvent: React.FC = () => {
       }, 1500);
     } catch (error) {
       console.error('Error creating event:', error);
-      toast.error('Failed to create event.');
+      toast.error(error.message);
     }
   };
 
@@ -117,7 +117,16 @@ const CreateEvent: React.FC = () => {
             type="text"
             placeholder="Enter event name"
             className={inputClasses}
-            {...register('eventName', { required: 'Event name is required' })}
+            {...register('eventName', { required: 'Event name is required',
+            minLength: {
+              value: 3,
+              message: 'At least 3 characters required',
+            },
+            maxLength: {
+              value: 30,
+              message: 'Event name must be at most 30 characters',
+            },
+             })}
           />
           {errors.eventName && (
             <p className={errorClasses}>{errors.eventName.message}</p>
@@ -217,6 +226,10 @@ const CreateEvent: React.FC = () => {
                 value: 10,
                 message: 'At least 10 characters required',
               },
+              maxLength: {
+                value: 500,
+                message: 'Description must be at most 500 characters',
+              },
             })}
           ></textarea>
           {errors.description && (
@@ -230,7 +243,16 @@ const CreateEvent: React.FC = () => {
             type="text"
             placeholder="Enter event location"
             className={inputClasses}
-            {...register('location', { required: 'Location is required' })}
+            {...register('location', { required: 'Location is required',
+            minLength: {
+              value: 3,
+              message: 'At least 3 characters required',
+            },
+            maxLength: {
+              value: 20,
+              message: 'Location must be at most 20 characters',
+            },
+             })}
           />
           {errors.location && (
             <p className={errorClasses}>{errors.location.message}</p>

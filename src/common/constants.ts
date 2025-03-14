@@ -19,7 +19,7 @@ export const MAX_DESC_LENGTH = 500;
 export const MAX_COVER_PHOTO_SIZE: number = 5 * 1024 * 1024; // 5 MB
 export const MAX_EVENTS_COUNT_GRID: number = 10;
 export const MIN_LOCATION_LENGTH = 3;
-export const MAX_LOCATION_LENGTH = 100;
+export const MAX_LOCATION_LENGTH = 20;
 
 // Pagination
 export const PAGE_SIZE = 10;
