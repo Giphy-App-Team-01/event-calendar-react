@@ -9,7 +9,14 @@ import {
 } from '../../utils/validationHelpers';
 import { databaseUser, Event } from '../../types/interfaces';
 import { format, parseISO } from 'date-fns';
-import { Trash, CalendarPlus, Pencil, XCircle, UserPlus } from 'lucide-react';
+import {
+  Trash,
+  CalendarPlus,
+  Pencil,
+  XCircle,
+  UserPlus,
+  Loader2,
+} from 'lucide-react';
 import {
   deleteEvent,
   getEventById,
@@ -23,6 +30,7 @@ import {
 } from '../../services/db-service';
 import EventMap from '../EventMap/EventMap';
 import { toast } from 'react-toastify';
+import { uploadImageToCloudinary } from '../../services/upload-service';
 
 const SingleEventView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +43,9 @@ const SingleEventView: React.FC = () => {
   const [friends, setFriends] = useState<databaseUser[]>([]);
   const [isInvitePopupOpen, setIsInvitePopupOpen] = useState(false);
   const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
+  const [editCoverFile, setEditCoverFile] = useState<File | null>(null);
+  const [editCoverPreview, setEditCoverPreview] = useState<string | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<Partial<Event>>({
     title: '',
@@ -98,12 +109,11 @@ const SingleEventView: React.FC = () => {
 
   const handleSaveEdit = async () => {
     try {
-   
+      setLoadingEdit(true);
       validateTitle(formData.title || '');
       validateDescription(formData.description || '');
       validateLocation(formData.location || '');
-  
-     
+
       const updatedData: Partial<Event> = {
         title: formData.title,
         description: formData.description,
@@ -111,13 +121,18 @@ const SingleEventView: React.FC = () => {
         start: formData.start,
         end: formData.end,
       };
- 
+
       if (formData.recurrence && formData.recurrence.toLowerCase() !== 'none') {
         updatedData.recurrence = formData.recurrence;
       } else {
         updatedData.recurrence = null;
       }
-  
+
+      if (editCoverFile) {
+        const newImageUrl = await uploadImageToCloudinary(editCoverFile);
+        updatedData.image = newImageUrl || event?.image || '';
+      }
+
       if (event) {
         await updateEvent(event.id, updatedData);
       }
@@ -131,9 +146,20 @@ const SingleEventView: React.FC = () => {
       } else {
         toast.error('An unknown error occurred');
       }
+    } finally {
+      setLoadingEdit(false);
     }
   };
-  
+
+  const handleEditCoverFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setEditCoverFile(file);
+      setEditCoverPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleJoinEvent = async () => {
     if (!event || !authUser) return;
@@ -185,14 +211,13 @@ const SingleEventView: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const handleDateTimeBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value; // Очаквания формат: "YYYY-MM-DDTHH:mm" (ако има T и т.н.)
+    const value = e.target.value;
     if (!value) return;
-    const parts = value.split('-'); // parts[0] съдържа годината
+    const parts = value.split('-');
     const enteredYear = parseInt(parts[0], 10);
     if (enteredYear < currentYear) {
       parts[0] = currentYear.toString();
       const newValue = parts.join('-');
-      // Актуализираме formData чрез setFormData
       setFormData((prev) => ({ ...prev, [e.target.name]: newValue }));
     }
   };
@@ -299,10 +324,32 @@ const SingleEventView: React.FC = () => {
 
         {isEditOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg backdrop-brightness-75">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-96">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 Edit Event
               </h2>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-800">
+                  Cover Image
+                </label>
+                <div className="relative group">
+                  <img
+                    src={editCoverPreview || event.image}
+                    alt="Cover Preview"
+                    className="w-full h-48 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg"
+                  />
+                  <input
+                    type="file"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    accept="image/*"
+                    onChange={handleEditCoverFileChange}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl">
+                    <span className="text-white font-medium">Change Image</span>
+                  </div>
+                </div>
+              </div>
 
               <label className="block text-sm font-medium text-gray-800">
                 Title
@@ -401,12 +448,20 @@ const SingleEventView: React.FC = () => {
                   className="bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer"
                   onClick={handleSaveEdit}
                 >
-                  Save Changes
+                  {loadingEdit ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="animate-spin w-6 h-6" />
+                      <span>Saving...</span>
+                    </div>
+                  ) : (
+                    'Save Changes'
+                  )}{' '}
                 </Button>
               </div>
             </div>
           </div>
         )}
+
         {isInvitePopupOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300 ease-out">
             <div className="bg-white p-6 rounded-lg shadow-2xl w-96 transform scale-100 hover:scale-105 transition-transform duration-300 ease-out">
