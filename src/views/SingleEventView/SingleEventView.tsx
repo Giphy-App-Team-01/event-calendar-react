@@ -31,6 +31,8 @@ import {
 import EventMap from '../EventMap/EventMap';
 import { toast } from 'react-toastify';
 import { uploadImageToCloudinary } from '../../services/upload-service';
+import Loading from '../../components/Loading/Loading';
+import ErrorMessage from '../../components/ErrorMessage/ErrorMessage';
 
 const SingleEventView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -222,16 +224,22 @@ const SingleEventView: React.FC = () => {
     }
   };
 
-  if (loading)
-    return <p className="text-center text-gray-600">Loading event...</p>;
+  if (loading) return <Loading type="event" />;
+
   if (!event)
-    return <p className="text-center text-red-500">Event not found.</p>;
+    return (
+      <ErrorMessage
+        type={'event'} error={{ message: "We couldn't find the event you're looking for." }}
+      />
+    );
 
   return (
     <div className="min-h-screen py-5">
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
+        <div className="grid grid-cols-[1fr_auto] gap-4 mb-4 items-center">
+          <h1 className="text-3xl font-bold text-gray-900 break-words">
+            {event.title}
+          </h1>
           {(authUser?.uid === event.creatorId || dbUser?.isAdmin) && (
             <div className="flex gap-2">
               <Button
@@ -240,7 +248,6 @@ const SingleEventView: React.FC = () => {
               >
                 <UserPlus className="w-5 h-5" /> Invite Friends
               </Button>
-
               <Button
                 className="bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer"
                 onClick={() => setIsEditOpen(true)}
@@ -256,6 +263,7 @@ const SingleEventView: React.FC = () => {
             </div>
           )}
         </div>
+
         <img
           src={event.image}
           alt={event.title}
