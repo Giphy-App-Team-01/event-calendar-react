@@ -236,13 +236,21 @@ const Profile: React.FC = () => {
         {authUser?.uid !== id && dbUser?.isAdmin && (
           <div className="absolute top-4 right-4 flex gap-2">
             <Button
-              className="bg-red-500 text-white px-3 py-1 rounded-md text-sm cursor-pointer"
+              className={`text-white px-3 py-1 rounded-md text-sm cursor-pointer ${
+                user?.isBlocked
+                  ? 'bg-green-500 hover:bg-green-600'
+                  : 'bg-red-500 hover:bg-red-600'
+              }`}
               onClick={handleToggleBlock}
             >
               {user?.isBlocked ? 'Unblock' : 'Block'}
             </Button>
             <Button
-              className="bg-yellow-500 text-white px-3 py-1 rounded-md text-sm cursor-pointer"
+              className={`text-white px-3 py-1 rounded-md text-sm cursor-pointer ${
+                user?.isAdmin
+                  ? 'bg-red-500 hover:bg-red-600'
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
               onClick={handleToggleAdmin}
             >
               {user?.isAdmin ? 'Remove Admin' : 'Make Admin'}
@@ -439,7 +447,7 @@ const Profile: React.FC = () => {
               } cursor-pointer`}
               onClick={() => setActiveTab('invitedEvents')}
             >
-             Joined Events
+              Joined Events
             </Button>
           )}
         </div>

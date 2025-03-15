@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import DefaultCover from '../../assets/images/event-cover.webp';
 import { NewEvent, FormValues } from '../../types/interfaces';
 import { isValid, parse } from 'date-fns';
+import { Info } from 'lucide-react';
 
 const CreateEvent: React.FC = () => {
   const { authUser } = useContext(AppContext);
@@ -83,15 +84,14 @@ const CreateEvent: React.FC = () => {
       options?: { shouldValidate: boolean }
     ) => void
   ) => {
-    const value = e.target.value; 
+    const value = e.target.value;
     if (!value) return;
-    const parts = value.split('-'); 
+    const parts = value.split('-');
     const enteredYear = parseInt(parts[0], 10);
     if (enteredYear < currentYear) {
-  
       parts[0] = currentYear.toString();
       const newValue = parts.join('-');
-      
+
       setValue(e.target.name as keyof FormValues, newValue, {
         shouldValidate: true,
       });
@@ -105,7 +105,7 @@ const CreateEvent: React.FC = () => {
   const errorClasses = 'text-sm text-red-500 mt-1';
 
   return (
-    <div className="CreateEvent max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
+    <div className="relative max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
       <h1 className="text-center text-2xl font-bold mb-6 text-gray-800">
         Create an Event
       </h1>
@@ -121,16 +121,17 @@ const CreateEvent: React.FC = () => {
             type="text"
             placeholder="Enter event name"
             className={inputClasses}
-            {...register('eventName', { required: 'Event name is required',
-            minLength: {
-              value: 3,
-              message: 'At least 3 characters required',
-            },
-            maxLength: {
-              value: 30,
-              message: 'Event name must be at most 30 characters',
-            },
-             })}
+            {...register('eventName', {
+              required: 'Event name is required',
+              minLength: {
+                value: 3,
+                message: 'At least 3 characters required',
+              },
+              maxLength: {
+                value: 30,
+                message: 'Event name must be at most 30 characters',
+              },
+            })}
           />
           {errors.eventName && (
             <p className={errorClasses}>{errors.eventName.message}</p>
@@ -247,16 +248,17 @@ const CreateEvent: React.FC = () => {
             type="text"
             placeholder="Enter event location"
             className={inputClasses}
-            {...register('location', { required: 'Location is required',
-            minLength: {
-              value: 3,
-              message: 'At least 3 characters required',
-            },
-            maxLength: {
-              value: 20,
-              message: 'Location must be at most 20 characters',
-            },
-             })}
+            {...register('location', {
+              required: 'Location is required',
+              minLength: {
+                value: 3,
+                message: 'At least 3 characters required',
+              },
+              maxLength: {
+                value: 20,
+                message: 'Location must be at most 20 characters',
+              },
+            })}
           />
           {errors.location && (
             <p className={errorClasses}>{errors.location.message}</p>
@@ -324,6 +326,26 @@ const CreateEvent: React.FC = () => {
           Create Event
         </Button>
       </form>
+      {/* Info */}
+      <div className="absolute top-4 right-4">
+        <div className="relative group">
+          <Info className="w-8 h-8 text-blue-500 cursor-pointer" />
+          <div className="absolute top-0 right-full mr-2 w-64 p-4 bg-gray-100 border border-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800">
+              Event Creation Guidelines
+            </h2>
+            <ul className="list-disc list-inside text-gray-600 text-sm">
+              <li>Event name must be between 3 and 30 characters.</li>
+              <li>Description should be detailed (10-500 characters).</li>
+              <li>Location must be between 3 and 20 characters.</li>
+              <li>Start and End dates must be valid and in the future.</li>
+              <li>
+                If no cover image is provided, a default cover will be used.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
