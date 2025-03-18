@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { loginUser } from '../../services/auth-service';
+import { forgotPassword, loginUser } from '../../services/auth-service';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Button from '../../components/Button/Button';
 import { getUserById } from '../../services/db-service';
 import BlockedPopup from '../../components/BlockedPopup/BlockedPopup';
+
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -14,8 +15,9 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const [isBlockedAccount, setIsBlockedAccount] = useState(false);
-  const [showBlockedPopup, setShowBlockedPopup] = useState(false);  
+  const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -34,7 +36,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       if (userRecord?.isBlocked) {
         setIsBlockedAccount(true);
         setShowBlockedPopup(true);
-        onClose(); 
+        onClose();
         return;
       }
 
@@ -49,18 +51,33 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleResetPassword = async () => {
+    try {
+      setLoading(true);
+      await forgotPassword(resetEmail);
+      toast.success('Reset link sent! Please check your email.');
+      setIsForgotPasswordOpen(false);
+      setResetEmail('');
+    } catch (error: unknown) {
+      console.error(error);
+      toast.error('Failed to send reset link.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (isBlockedAccount) {
     return showBlockedPopup ? (
       <div className={`modal ${isOpen ? 'modal-open' : ''}`}>
-        <BlockedPopup onClose={() => {
+        <BlockedPopup
+          onClose={() => {
             setShowBlockedPopup(false);
             setIsBlockedAccount(false);
-        }} />
+          }}
+        />
       </div>
     ) : null;
   }
-  
-  
 
   return (
     <div className={`modal ${isOpen ? 'modal-open' : ''}`}>
@@ -104,19 +121,29 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="text-right">
-              <Button className='text-blue-500 hover:underline' onClick={() => setIsForgotPasswordOpen(true)}>
+              <Button
+                className="text-blue-500 hover:underline"
+                onClick={() => setIsForgotPasswordOpen(true)}
+              >
                 Forgot Password?
               </Button>
             </div>
 
-            <Button type='submit' className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md 
+            <Button
+              type="submit"
+              className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md 
              bg-blue-500 hover:bg-blue-600 transition-all text-white
-            ">{loading ? 'Loading...' : 'Login' }
+            "
+            >
+              {loading ? 'Loading...' : 'Login'}
             </Button>
           </form>
 
           <div className="modal-action flex justify-center mt-6">
-            <Button className='btn btn-outline px-8 py-3 rounded-lg text-gray-600 border-gray-400 hover:bg-gray-200' onClick={onClose}>
+            <Button
+              className="btn btn-outline px-8 py-3 rounded-lg text-gray-600 border-gray-400 hover:bg-gray-200"
+              onClick={onClose}
+            >
               Close
             </Button>
           </div>
@@ -132,15 +159,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <input
             type="email"
             placeholder="Enter your email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
             className="input input-bordered w-full py-4 px-5 rounded-lg focus:ring-2 focus:ring-blue-300 bg-white text-gray-900 border-gray-300 mb-6"
             required
           />
-          <Button className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md bg-blue-400 hover:bg-blue-500 transition-all text-white">
-            Send Reset Link
+          <Button
+            onClick={handleResetPassword}
+            className="btn w-full py-4 text-xl font-medium rounded-lg shadow-md bg-blue-400 hover:bg-blue-500 transition-all text-white"
+          >
+            {loading ? 'Sending...' : 'Send Reset Link'}
           </Button>
           <div className="modal-action flex justify-center mt-6">
-            <Button className="btn btn-outline px-8 py-3 rounded-lg text-gray-600 border-gray-400 hover:bg-gray-200"
-              onClick={() => setIsForgotPasswordOpen(false)}>
+            <Button
+              className="btn btn-outline px-8 py-3 rounded-lg text-gray-600 border-gray-400 hover:bg-gray-200"
+              onClick={() => setIsForgotPasswordOpen(false)}
+            >
               Back to Login
             </Button>
           </div>
