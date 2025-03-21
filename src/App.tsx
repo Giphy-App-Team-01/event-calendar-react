@@ -79,6 +79,7 @@ const App: React.FC = () => {
   if (appState.loading) {
     return <Loading />;
   }
+  
   if (error) {
     return <ErrorMessage error={error} />;
   }
