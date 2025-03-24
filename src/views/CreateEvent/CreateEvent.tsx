@@ -105,7 +105,7 @@ const CreateEvent: React.FC = () => {
   const errorClasses = 'text-sm text-red-500 mt-1';
 
   return (
-    <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
+    <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg relative'>
       <h1 className='text-center text-2xl font-bold mb-6 text-gray-800'>
         Create an Event
       </h1>
@@ -327,7 +327,7 @@ const CreateEvent: React.FC = () => {
         </Button>
       </form>
       {/* Info */}
-      <div className='absolute top-4 right-4'>
+      <div className='absolute top-4 right-4 text-gray-900'>
         <div className='relative group'>
           <Info className='w-8 h-8 text-blue-500 cursor-pointer' />
           <div className='absolute top-0 right-full mr-2 w-64 p-4 bg-gray-100 border border-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10'>

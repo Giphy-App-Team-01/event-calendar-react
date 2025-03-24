@@ -232,7 +232,7 @@ const Profile: React.FC = () => {
   };
   return (
     <div className='min-h-screen'>
-      <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
+      <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg relative'>
         {authUser?.uid !== id && dbUser?.isAdmin && (
           <div className='absolute top-4 right-4 flex gap-2'>
             <Button

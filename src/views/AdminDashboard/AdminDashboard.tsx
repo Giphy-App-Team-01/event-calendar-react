@@ -62,7 +62,9 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
-      <h1 className='text-center text-3xl font-bold mb-8'>Admin Dashboard</h1>
+      <h1 className='text-center text-3xl font-bold mb-8 text-gray-900'>
+        Admin Dashboard
+      </h1>
 
       <section className='mb-12'>
         <h2 className='text-2xl font-semibold mb-4 text-gray-900'>
