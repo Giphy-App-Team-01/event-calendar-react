@@ -105,21 +105,21 @@ const CreateEvent: React.FC = () => {
   const errorClasses = 'text-sm text-red-500 mt-1';
 
   return (
-    <div className="relative max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
-      <h1 className="text-center text-2xl font-bold mb-6 text-gray-800">
+    <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
+      <h1 className='text-center text-2xl font-bold mb-6 text-gray-800'>
         Create an Event
       </h1>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 gap-y-5"
+        className='grid grid-cols-1 gap-y-5'
       >
         {/* EVENT NAME */}
         <div>
           <label className={labelClasses}>Event Name</label>
           <input
-            type="text"
-            placeholder="Enter event name"
+            type='text'
+            placeholder='Enter event name'
             className={inputClasses}
             {...register('eventName', {
               required: 'Event name is required',
@@ -138,29 +138,29 @@ const CreateEvent: React.FC = () => {
           )}
         </div>
         {/* COVER IMAGE */}
-        <div className="form-control">
-          <label className="label font-medium text-gray-700">
-            <span className="label-text">Cover Image</span>
+        <div className='form-control'>
+          <label className='label font-medium text-gray-700'>
+            <span className='label-text'>Cover Image</span>
           </label>
-          <div className="relative group">
+          <div className='relative group'>
             <img
               src={previewImage || DefaultCover}
-              alt="Cover Preview"
-              className="w-full h-72 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg"
+              alt='Cover Preview'
+              className='w-full h-72 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg'
             />
             <input
-              type="file"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              accept="image/*"
+              type='file'
+              className='absolute inset-0 opacity-0 cursor-pointer'
+              accept='image/*'
               {...register('coverImage')}
               onChange={handleFileChange}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl">
-              <span className="text-white font-medium">Change Image</span>
+            <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl'>
+              <span className='text-white font-medium'>Change Image</span>
             </div>
           </div>
           {errors.coverImage && (
-            <p className="text-sm text-red-500 mt-1">
+            <p className='text-sm text-red-500 mt-1'>
               {errors.coverImage.message}
             </p>
           )}
@@ -170,7 +170,7 @@ const CreateEvent: React.FC = () => {
         <div>
           <label className={labelClasses}>Start (Date & Time)</label>
           <input
-            type="datetime-local"
+            type='datetime-local'
             className={inputClasses}
             {...register('start', {
               required: 'Start Date/Time is required',
@@ -197,7 +197,7 @@ const CreateEvent: React.FC = () => {
         <div>
           <label className={labelClasses}>End (Date & Time)</label>
           <input
-            type="datetime-local"
+            type='datetime-local'
             className={inputClasses}
             {...register('end', {
               required: 'End Date/Time is required',
@@ -224,7 +224,7 @@ const CreateEvent: React.FC = () => {
           <textarea
             rows={4}
             className={`${inputClasses} resize-none`}
-            placeholder="Describe the event..."
+            placeholder='Describe the event...'
             {...register('description', {
               required: 'Description is required',
               minLength: {
@@ -245,8 +245,8 @@ const CreateEvent: React.FC = () => {
         <div>
           <label className={labelClasses}>Location</label>
           <input
-            type="text"
-            placeholder="Enter event location"
+            type='text'
+            placeholder='Enter event location'
             className={inputClasses}
             {...register('location', {
               required: 'Location is required',
@@ -271,50 +271,50 @@ const CreateEvent: React.FC = () => {
             className={`${inputClasses} bg-white`}
             {...register('recurrence')}
           >
-            <option value="none">None</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
+            <option value='none'>None</option>
+            <option value='daily'>Daily</option>
+            <option value='weekly'>Weekly</option>
+            <option value='monthly'>Monthly</option>
+            <option value='yearly'>Yearly</option>
           </select>
         </div>
         {/* EVENT VISIBILITY (PUBLIC / PRIVATE) */}
-        <div className="mb-5">
-          <p className="text-gray-800 font-bold text-lg mb-3">
+        <div className='mb-5'>
+          <p className='text-gray-800 font-bold text-lg mb-3'>
             Event Visibility
           </p>
 
-          <div className="flex gap-4">
+          <div className='flex gap-4'>
             {/* Public Radio */}
-            <label className="cursor-pointer relative">
+            <label className='cursor-pointer relative'>
               <input
-                type="radio"
-                value="public"
+                type='radio'
+                value='public'
                 {...register('visibility', { required: true })}
-                className="peer opacity-0 absolute"
+                className='peer opacity-0 absolute'
                 defaultChecked
               />
               <div
-                className="px-5 py-2 rounded-md text-gray-700 bg-gray-200 
+                className='px-5 py-2 rounded-md text-gray-700 bg-gray-200 
                     peer-checked:bg-blue-500 peer-checked:text-white 
-                    transition-colors"
+                    transition-colors'
               >
                 Public
               </div>
             </label>
 
             {/* Private Radio */}
-            <label className="cursor-pointer relative">
+            <label className='cursor-pointer relative'>
               <input
-                type="radio"
-                value="private"
+                type='radio'
+                value='private'
                 {...register('visibility', { required: true })}
-                className="peer opacity-0 absolute"
+                className='peer opacity-0 absolute'
               />
               <div
-                className="px-5 py-2 rounded-md text-gray-700 bg-gray-200 
+                className='px-5 py-2 rounded-md text-gray-700 bg-gray-200 
                     peer-checked:bg-blue-500 peer-checked:text-white 
-                    transition-colors"
+                    transition-colors'
               >
                 Private
               </div>
@@ -322,19 +322,19 @@ const CreateEvent: React.FC = () => {
           </div>
         </div>
         {/* SUBMIT BUTTON */}
-        <Button type="submit" className="btn btn-primary w-full mt-1">
+        <Button type='submit' className='btn btn-primary w-full mt-1'>
           Create Event
         </Button>
       </form>
       {/* Info */}
-      <div className="absolute top-4 right-4">
-        <div className="relative group">
-          <Info className="w-8 h-8 text-blue-500 cursor-pointer" />
-          <div className="absolute top-0 right-full mr-2 w-64 p-4 bg-gray-100 border border-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">
+      <div className='absolute top-4 right-4'>
+        <div className='relative group'>
+          <Info className='w-8 h-8 text-blue-500 cursor-pointer' />
+          <div className='absolute top-0 right-full mr-2 w-64 p-4 bg-gray-100 border border-gray-300 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10'>
+            <h2 className='text-lg font-semibold mb-2 text-gray-800'>
               Event Creation Guidelines
             </h2>
-            <ul className="list-disc list-inside text-gray-600 text-sm">
+            <ul className='list-disc list-inside text-gray-600 text-sm'>
               <li>Event name must be between 3 and 30 characters.</li>
               <li>Description should be detailed (10-500 characters).</li>
               <li>Location must be between 3 and 20 characters.</li>

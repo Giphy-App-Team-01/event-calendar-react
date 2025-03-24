@@ -15,9 +15,9 @@ const EventsList: React.FC<EventsListProps> = ({
   layout = 'grid',
 }) => {
   return (
-    <div className="relative mt-6">
+    <div className='relative mt-6'>
       <div
-        className={`bg-gray-100 border border-gray-300 shadow-md rounded-lg p-4 min-h-[300px] ${
+        className={`bg-gray-100 border border-gray-300 rounded-lg p-4 min-h-[300px] ${
           layout === 'scroll'
             ? 'overflow-x-auto scrollbar-hide'
             : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
@@ -25,9 +25,9 @@ const EventsList: React.FC<EventsListProps> = ({
       >
         {events.length > 0 ? (
           layout === 'scroll' ? (
-            <div className="flex gap-4 pr-3">
+            <div className='flex gap-4 pr-3'>
               {events.map((event) => (
-                <div key={event.id} className="min-w-[300px]">
+                <div key={event.id} className='min-w-[300px]'>
                   <SingleEventItemCard event={event} />
                 </div>
               ))}
@@ -40,9 +40,9 @@ const EventsList: React.FC<EventsListProps> = ({
             ))
           )
         ) : (
-          <div className="flex flex-col items-center justify-center w-full min-h-[300px]">
-            <CalendarOff className="w-12 h-12 text-gray-500 mb-4" />
-            <p className="text-xl font-semibold text-gray-600">
+          <div className='flex flex-col items-center justify-center w-full min-h-[300px]'>
+            <CalendarOff className='w-12 h-12 text-gray-500 mb-4' />
+            <p className='text-xl font-semibold text-gray-600'>
               No events to show
             </p>
           </div>

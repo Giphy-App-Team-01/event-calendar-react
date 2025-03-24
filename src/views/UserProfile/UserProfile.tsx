@@ -231,10 +231,10 @@ const Profile: React.FC = () => {
     }
   };
   return (
-    <div className="min-h-screen py-20">
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-2xl rounded-lg mt-8 relative border border-gray-200">
+    <div>
+      <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
         {authUser?.uid !== id && dbUser?.isAdmin && (
-          <div className="absolute top-4 right-4 flex gap-2">
+          <div className='absolute top-4 right-4 flex gap-2'>
             <Button
               className={`text-white px-3 py-1 rounded-md text-sm cursor-pointer ${
                 user?.isBlocked
@@ -258,36 +258,36 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        <div className="flex items-center gap-6">
-          <div className="relative w-24 h-24 rounded-full border border-gray-300 overflow-hidden group">
+        <div className='flex items-center gap-6'>
+          <div className='relative w-24 h-24 rounded-full border border-gray-300 overflow-hidden group'>
             <img
               src={profilePic}
-              alt="Profile"
-              className="w-full h-full object-cover"
+              alt='Profile'
+              className='w-full h-full object-cover'
             />
             {authUser?.uid === id && editing && (
-              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <span className="text-white text-sm">
+              <div className='absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+                <span className='text-white text-sm'>
                   {isUploading ? '🔄 Loading...' : '📷 Change'}
                 </span>
               </div>
             )}
             {authUser?.uid === id && editing && (
               <input
-                type="file"
-                accept="image/*"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                type='file'
+                accept='image/*'
+                className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                 onChange={handleProfilePicChange}
               />
             )}
           </div>
 
           <div>
-            <p className="text-lg font-semibold text-gray-900">
+            <p className='text-lg font-semibold text-gray-900'>
               @{formData.username}
             </p>
             {editing ? (
-              <div className="flex flex-col space-y-2">
+              <div className='flex flex-col space-y-2'>
                 {(
                   ['firstName', 'lastName', 'phoneNumber', 'address'] as Array<
                     keyof databaseUser
@@ -295,17 +295,17 @@ const Profile: React.FC = () => {
                 ).map((field) => (
                   <input
                     key={field}
-                    type="text"
+                    type='text'
                     name={field}
                     value={String(
                       formData[field as keyof typeof formData] ?? ''
                     )}
                     onChange={handleInputChange}
-                    className="border border-gray-300 px-3 py-1 rounded-md w-45 bg-gray-100 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className='border border-gray-300 px-3 py-1 rounded-md w-45 bg-gray-100 text-gray-900 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
                   />
                 ))}
 
-                <div className="flex items-center gap-4 mt-4">
+                <div className='flex items-center gap-4 mt-4'>
                   <span
                     className={`font-medium transition-colors ${
                       formData.allowEventInvites
@@ -318,10 +318,10 @@ const Profile: React.FC = () => {
                       : 'Invites Disabled'}
                   </span>
 
-                  <label className="cursor-pointer">
+                  <label className='cursor-pointer'>
                     <input
-                      type="checkbox"
-                      className="hidden"
+                      type='checkbox'
+                      className='hidden'
                       checked={formData.allowEventInvites}
                       onChange={handleToggleInvites}
                     />
@@ -345,46 +345,46 @@ const Profile: React.FC = () => {
               </div>
             ) : (
               <>
-                <p className="text-gray-800 font-medium leading-tight">
+                <p className='text-gray-800 font-medium leading-tight'>
                   {formData.firstName} {formData.lastName}
                 </p>
-                <p className="text-gray-700 leading-tight">
+                <p className='text-gray-700 leading-tight'>
                   {formData.phoneNumber}
                 </p>
-                <p className="text-gray-700 leading-tight">
+                <p className='text-gray-700 leading-tight'>
                   {formData.address}
                 </p>
 
                 {user?.allowEventInvites ? (
-                  <p className="text-blue-700 font-medium flex items-center gap-2 leading-tight">
-                    <CalendarCheck className="w-5 h-5 text-blue-700" />
+                  <p className='text-blue-700 font-medium flex items-center gap-2 leading-tight'>
+                    <CalendarCheck className='w-5 h-5 text-blue-700' />
                     <span>Accepting event invites</span>
                   </p>
                 ) : (
-                  <p className="text-red-700 font-medium flex items-center gap-2 leading-tight">
-                    <CalendarX className="w-5 h-5 text-red-700" />
+                  <p className='text-red-700 font-medium flex items-center gap-2 leading-tight'>
+                    <CalendarX className='w-5 h-5 text-red-700' />
                     <span>Not accepting event invites</span>
                   </p>
                 )}
 
                 {authUser?.uid !== id && (
-                  <div className="mt-2">
+                  <div className='mt-2'>
                     {isFriend ? (
-                      <p className="text-green-700 font-medium flex items-center gap-2 leading-tight">
-                        <UserCheck className="w-5 h-5 text-green-700" />
+                      <p className='text-green-700 font-medium flex items-center gap-2 leading-tight'>
+                        <UserCheck className='w-5 h-5 text-green-700' />
                         <span>You are friends</span>
                       </p>
                     ) : isFriendRequestSent ? (
-                      <p className="text-gray-700 font-medium flex items-center gap-2 leading-tight">
-                        <Hourglass className="w-5 h-5 text-gray-500" />
+                      <p className='text-gray-700 font-medium flex items-center gap-2 leading-tight'>
+                        <Hourglass className='w-5 h-5 text-gray-500' />
                         <span>Friend request pending...</span>
                       </p>
                     ) : (
                       <Button
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center gap-2 justify-center shadow-md"
+                        className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center gap-2 justify-center shadow-md'
                         onClick={handleSendFriendRequest}
                       >
-                        <UserPlus className="w-5 h-5 text-white" />
+                        <UserPlus className='w-5 h-5 text-white' />
                         Add to Contacts
                       </Button>
                     )}
@@ -397,15 +397,15 @@ const Profile: React.FC = () => {
 
         {authUser?.uid === id &&
           (editing ? (
-            <div className="flex gap-1 mt-4">
+            <div className='flex gap-1 mt-4'>
               <Button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+                className='bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer'
                 onClick={handleSave}
               >
                 Save
               </Button>
               <Button
-                className="bg-red-500 text-white px-4 py-2 rounded-md cursor-pointer"
+                className='bg-red-500 text-white px-4 py-2 rounded-md cursor-pointer'
                 onClick={() => setEditing(false)}
               >
                 Cancel
@@ -413,14 +413,14 @@ const Profile: React.FC = () => {
             </div>
           ) : (
             <Button
-              className="bg-gray-400 px-4 py-2 rounded-md mt-4 text-white cursor-pointer"
+              className='bg-gray-400 px-4 py-2 rounded-md mt-4 text-white cursor-pointer'
               onClick={handleEdit}
             >
               Edit Profile
             </Button>
           ))}
 
-        <div className="flex justify-center gap-4 mt-6">
+        <div className='flex justify-center gap-4 mt-6'>
           {authUser?.uid === id ? (
             <Button
               className={`px-4 py-2 rounded-md transition-all cursor-pointer ${
@@ -433,7 +433,7 @@ const Profile: React.FC = () => {
               Events by Me
             </Button>
           ) : (
-            <Button className="px-4 py-2 rounded-md bg-blue-500 text-white">
+            <Button className='px-4 py-2 rounded-md bg-blue-500 text-white'>
               Public Events
             </Button>
           )}
@@ -454,8 +454,8 @@ const Profile: React.FC = () => {
 
         <EventsList
           events={activeTab === 'myEvents' ? events : invitedEvents}
-          layout="scroll"
-          className="pr-3"
+          layout='scroll'
+          className='pr-3'
         />
       </div>
     </div>

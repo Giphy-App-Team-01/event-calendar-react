@@ -224,41 +224,42 @@ const SingleEventView: React.FC = () => {
     }
   };
 
-  if (loading) return <Loading type="event" />;
+  if (loading) return <Loading type='event' />;
 
   if (!event)
     return (
       <ErrorMessage
-        type={'event'} error={{ message: "We couldn't find the event you're looking for." }}
+        type={'event'}
+        error={{ message: "We couldn't find the event you're looking for." }}
       />
     );
 
   return (
-    <div className="min-h-screen py-5">
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <div className="grid grid-cols-[1fr_auto] gap-4 mb-4 items-center">
-          <h1 className="text-3xl font-bold text-gray-900 break-words">
+    <div className='min-h-screen'>
+      <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
+        <div className='grid grid-cols-[1fr_auto] gap-4 mb-4 items-center'>
+          <h1 className='text-3xl font-bold text-gray-900 break-words'>
             {event.title}
           </h1>
           {(authUser?.uid === event.creatorId || dbUser?.isAdmin) && (
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <Button
-                className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer shadow-md transition-all duration-200"
+                className='bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer shadow-md transition-all duration-200'
                 onClick={() => setIsInvitePopupOpen(true)}
               >
-                <UserPlus className="w-5 h-5" /> Invite Friends
+                <UserPlus className='w-5 h-5' /> Invite Friends
               </Button>
               <Button
-                className="bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer"
+                className='bg-yellow-500 hover:bg-yellow-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer'
                 onClick={() => setIsEditOpen(true)}
               >
-                <Pencil className="w-5 h-5" /> Edit Event
+                <Pencil className='w-5 h-5' /> Edit Event
               </Button>
               <Button
-                className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer"
+                className='bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer'
                 onClick={handleDelete}
               >
-                <Trash className="w-5 h-5" /> Delete Event
+                <Trash className='w-5 h-5' /> Delete Event
               </Button>
             </div>
           )}
@@ -267,23 +268,23 @@ const SingleEventView: React.FC = () => {
         <img
           src={event.image}
           alt={event.title}
-          className="w-full h-64 object-cover rounded-md shadow-md mb-6"
+          className='w-full h-64 object-cover rounded-md shadow-md mb-6'
         />
 
-        <p className="text-gray-700 text-lg leading-relaxed mb-6">
+        <p className='text-gray-700 text-lg leading-relaxed mb-6'>
           {event.description}
         </p>
 
-        <div className="border-t pt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800">
-          <div className="space-y-4">
-            <p className="text-lg">
-              <strong className="font-semibold text-gray-900">
+        <div className='border-t pt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800'>
+          <div className='space-y-4'>
+            <p className='text-lg'>
+              <strong className='font-semibold text-gray-900'>
                 Start Date:
               </strong>{' '}
               {format(parseISO(event.start), "EEEE, MMMM d, yyyy 'at' h:mm a")}
             </p>
-            <p className="text-lg">
-              <strong className="font-semibold text-gray-900">End Date:</strong>{' '}
+            <p className='text-lg'>
+              <strong className='font-semibold text-gray-900'>End Date:</strong>{' '}
               {format(parseISO(event.end), "EEEE, MMMM d, yyyy 'at' h:mm a")}
             </p>
             <div>
@@ -294,15 +295,15 @@ const SingleEventView: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <p className="text-lg">
-              <strong className="font-semibold text-gray-900">
+          <div className='space-y-4'>
+            <p className='text-lg'>
+              <strong className='font-semibold text-gray-900'>
                 Organizer:
               </strong>{' '}
               {organizer}
             </p>
-            <p className="text-lg">
-              <strong className="font-semibold text-gray-900">
+            <p className='text-lg'>
+              <strong className='font-semibold text-gray-900'>
                 Recurrence:
               </strong>{' '}
               {event.recurrence ? event.recurrence : 'None'}
@@ -310,68 +311,68 @@ const SingleEventView: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className='mt-8'>
           {authUser?.uid &&
             authUser.uid !== event.creatorId &&
             (event.participants?.[authUser.uid] ? (
               <Button
-                className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
+                className='bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer'
                 onClick={handleLeaveEvent}
               >
-                <XCircle className="w-6 h-6" /> Leave Event
+                <XCircle className='w-6 h-6' /> Leave Event
               </Button>
             ) : (
               <Button
-                className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer"
+                className='bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2 px-5 py-3 rounded-lg shadow-md text-lg cursor-pointer'
                 onClick={handleJoinEvent}
               >
-                <CalendarPlus className="w-6 h-6" /> Add to Calendar
+                <CalendarPlus className='w-6 h-6' /> Add to Calendar
               </Button>
             ))}
         </div>
 
         {isEditOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg backdrop-brightness-75">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
-              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+          <div className='fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg backdrop-brightness-75'>
+            <div className='bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl'>
+              <h2 className='text-lg font-semibold mb-4 text-gray-800'>
                 Edit Event
               </h2>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-800">
+              <div className='mb-4'>
+                <label className='block text-sm font-medium text-gray-800'>
                   Cover Image
                 </label>
-                <div className="relative group">
+                <div className='relative group'>
                   <img
                     src={editCoverPreview || event.image}
-                    alt="Cover Preview"
-                    className="w-full h-48 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg"
+                    alt='Cover Preview'
+                    className='w-full h-48 object-cover rounded-xl border border-gray-200 shadow-sm transition-all duration-300 group-hover:shadow-lg'
                   />
                   <input
-                    type="file"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    accept="image/*"
+                    type='file'
+                    className='absolute inset-0 opacity-0 cursor-pointer'
+                    accept='image/*'
                     onChange={handleEditCoverFileChange}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl">
-                    <span className="text-white font-medium">Change Image</span>
+                  <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl'>
+                    <span className='text-white font-medium'>Change Image</span>
                   </div>
                 </div>
               </div>
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 Title
               </label>
               <input
-                type="text"
+                type='text'
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
+                className='w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900'
               />
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 Description
               </label>
               <textarea
@@ -379,50 +380,50 @@ const SingleEventView: React.FC = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full p-2 border border-gray-300 rounded-md text-gray-900 resize-none h-32"
+                className='w-full p-2 border border-gray-300 rounded-md text-gray-900 resize-none h-32'
               ></textarea>
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 Location
               </label>
               <input
-                type="text"
+                type='text'
                 value={formData.location}
                 onChange={(e) =>
                   setFormData({ ...formData, location: e.target.value })
                 }
-                className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
+                className='w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900'
               />
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 Start Date
               </label>
               <input
-                type="datetime-local"
-                name="start"
+                type='datetime-local'
+                name='start'
                 value={formData.start}
                 onChange={(e) =>
                   setFormData({ ...formData, start: e.target.value })
                 }
                 onBlur={handleDateTimeBlur}
-                className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
+                className='w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900'
               />
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 End Date
               </label>
               <input
-                type="datetime-local"
-                name="end"
+                type='datetime-local'
+                name='end'
                 value={formData.end}
                 onChange={(e) =>
                   setFormData({ ...formData, end: e.target.value })
                 }
                 onBlur={handleDateTimeBlur}
-                className="w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900"
+                className='w-full p-2 border border-gray-300 rounded-md mb-2 text-gray-900'
               />
 
-              <label className="block text-sm font-medium text-gray-800">
+              <label className='block text-sm font-medium text-gray-800'>
                 Recurrence
               </label>
               <select
@@ -438,29 +439,29 @@ const SingleEventView: React.FC = () => {
                       | undefined,
                   })
                 }
-                className="w-full p-2 border border-gray-300 rounded-md mb-4 text-gray-900"
+                className='w-full p-2 border border-gray-300 rounded-md mb-4 text-gray-900'
               >
-                <option value="">None</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value=''>None</option>
+                <option value='daily'>Daily</option>
+                <option value='weekly'>Weekly</option>
+                <option value='monthly'>Monthly</option>
+                <option value='yearly'>Yearly</option>
               </select>
 
-              <div className="flex justify-end gap-2">
+              <div className='flex justify-end gap-2'>
                 <Button
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md cursor-pointer"
+                  className='bg-gray-400 text-white px-4 py-2 rounded-md cursor-pointer'
                   onClick={() => setIsEditOpen(false)}
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer"
+                  className='bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer'
                   onClick={handleSaveEdit}
                 >
                   {loadingEdit ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="animate-spin w-6 h-6" />
+                    <div className='flex items-center gap-2'>
+                      <Loader2 className='animate-spin w-6 h-6' />
                       <span>Saving...</span>
                     </div>
                   ) : (
@@ -473,18 +474,18 @@ const SingleEventView: React.FC = () => {
         )}
 
         {isInvitePopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300 ease-out">
-            <div className="bg-white p-6 rounded-lg shadow-2xl w-96 transform scale-100 hover:scale-105 transition-transform duration-300 ease-out">
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 text-center">
+          <div className='fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300 ease-out'>
+            <div className='bg-white p-6 rounded-lg shadow-2xl w-96 transform scale-100 hover:scale-105 transition-transform duration-300 ease-out'>
+              <h2 className='text-xl font-semibold mb-4 text-gray-900 text-center'>
                 Invite Friends 🎉
               </h2>
 
               {friends.length === 0 ? (
-                <p className="text-gray-500 text-sm text-center">
+                <p className='text-gray-500 text-sm text-center'>
                   No friends available to invite.
                 </p>
               ) : (
-                <ul className="space-y-3">
+                <ul className='space-y-3'>
                   {friends.map((friend) => {
                     const isAlreadyParticipant =
                       event?.participants?.[friend.uid];
@@ -492,13 +493,13 @@ const SingleEventView: React.FC = () => {
                     return (
                       <li
                         key={friend.uid}
-                        className="flex justify-between items-center p-3 bg-gray-100 rounded-lg shadow"
+                        className='flex justify-between items-center p-3 bg-gray-100 rounded-lg shadow'
                       >
                         <div>
-                          <p className="text-gray-900 font-medium">
+                          <p className='text-gray-900 font-medium'>
                             {friend.firstName} {friend.lastName}
                           </p>
-                          <p className="text-gray-500 text-sm">
+                          <p className='text-gray-500 text-sm'>
                             @{friend.username}
                           </p>
                         </div>
@@ -529,9 +530,9 @@ const SingleEventView: React.FC = () => {
                 </ul>
               )}
 
-              <div className="mt-5 flex justify-center">
+              <div className='mt-5 flex justify-center'>
                 <Button
-                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md transition-all cursor-pointer"
+                  className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md transition-all cursor-pointer'
                   onClick={() => setIsInvitePopupOpen(false)}
                 >
                   Close

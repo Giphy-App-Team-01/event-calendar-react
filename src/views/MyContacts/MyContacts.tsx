@@ -99,46 +99,46 @@ const MyContacts: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-20">
-      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">My Contacts</h2>
+    <div className='min-h-screen'>
+      <div className='p-6 max-w-5xl mx-auto bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg rounded-lg'>
+        <h2 className='text-2xl font-bold mb-4 text-gray-800'>My Contacts</h2>
 
         {contacts.length === 0 ? (
-          <p className="text-gray-500 text-center">You have no contacts yet.</p>
+          <p className='text-gray-500 text-center'>You have no contacts yet.</p>
         ) : (
-          <ul className="space-y-3">
+          <ul className='space-y-3'>
             {contacts.map((contact) => (
               <li
                 key={contact.uid}
-                className="flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-md"
+                className='flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-md'
               >
-                <div className="flex items-center gap-4">
+                <div className='flex items-center gap-4'>
                   <img
                     onClick={() => navigate(`/user/${contact.uid}`)}
                     src={contact.image}
-                    alt="Profile"
-                    className="w-12 h-12 rounded-full border shadow-sm cursor-pointer"
+                    alt='Profile'
+                    className='w-12 h-12 rounded-full border shadow-sm cursor-pointer'
                   />
-                  <p className="text-gray-900 font-medium text-lg">
+                  <p className='text-gray-900 font-medium text-lg'>
                     {contact.firstName} {contact.lastName}
                   </p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className='flex gap-2'>
                   <Button
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center gap-2 shadow"
+                    className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center gap-2 shadow'
                     onClick={() => handleRemoveFriend(contact.uid)}
                   >
-                    <UserMinus className="w-5 h-5 text-white" />
+                    <UserMinus className='w-5 h-5 text-white' />
                     Remove
                   </Button>
 
                   {contact.allowEventInvites && (
                     <Button
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 shadow"
+                      className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 shadow'
                       onClick={() => handleOpenInvitePopup(contact.uid)}
                     >
-                      <CalendarPlus className="w-5 h-5 text-white" />
+                      <CalendarPlus className='w-5 h-5 text-white' />
                       Invite
                     </Button>
                   )}
@@ -149,20 +149,20 @@ const MyContacts: React.FC = () => {
         )}
 
         {isPopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-8">
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50 z-50'>
+            <div className='relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-8'>
               <button
-                className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                className='absolute top-4 right-4 text-gray-600 hover:text-gray-800'
                 onClick={() => setIsPopupOpen(false)}
               >
-                <XCircle className="w-6 h-6" />
+                <XCircle className='w-6 h-6' />
               </button>
-              <h3 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+              <h3 className='text-2xl font-bold mb-6 text-gray-800 text-center'>
                 Select an Event
               </h3>
-              <ul className="space-y-4">
+              <ul className='space-y-4'>
                 {events.length === 0 ? (
-                  <p className="text-gray-500 text-center">
+                  <p className='text-gray-500 text-center'>
                     You have no created events.
                   </p>
                 ) : (
@@ -177,15 +177,15 @@ const MyContacts: React.FC = () => {
                     return (
                       <li
                         key={event.id}
-                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-100 rounded-lg shadow-md"
+                        className='flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-100 rounded-lg shadow-md'
                       >
-                        <div className="flex items-center gap-4">
-                          <CalendarDays className="w-6 h-6 text-blue-500" />
+                        <div className='flex items-center gap-4'>
+                          <CalendarDays className='w-6 h-6 text-blue-500' />
                           <div>
-                            <p className="text-gray-900 font-medium">
+                            <p className='text-gray-900 font-medium'>
                               {event.title}
                             </p>
-                            <p className="text-gray-500 text-sm">
+                            <p className='text-gray-500 text-sm'>
                               {format(
                                 parseISO(event.start),
                                 'EEE, MMM dd, HH:mm'
