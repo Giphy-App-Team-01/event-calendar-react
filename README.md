@@ -1,54 +1,98 @@
-# React + TypeScript + Vite
+# 📅 Event Calendar – Event Scheduling and Management Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧠 Description
+Event Calendar is a modern web application for planning and managing events. Designed to support both individual users and teams, it allows users to create events, invite friends, set recurring schedules, and manage their personal calendar with multiple view modes.
 
-Currently, two official plugins are available:
+## 🛠️ Technologies Used
+- **Frontend:** React + Vite + TypeScript
+- **UI & Styling:** TailwindCSS + DaisyUI
+- **Database & Auth:** Firebase (Realtime Database + Authentication)
+- **Image Uploads:** Cloudinary
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔐 Authentication & User Management
+Authentication and registration via Firebase Auth
 
-## Expanding the ESLint configuration
+Each user has:
+- Unique username (3–30 characters)
+- Email, 10-digit phone number, first and last name, required address, and avatar image
+- Profile editing is available (username is not editable)
+- User search available only by username
+- Friend requests and friend list system
+- Option to disable event invitations ("Do not invite me to events")
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📆 Calendar & Events
+Calendar with the following views: Day, Week, Month, Work Week (implemented without third-party calendar libraries)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Event creation and editing with:
+- Title, description (up to 500 characters), start and end date/time
+- Invite only friends (from contacts)
+- Public or private visibility
+- Location + event cover image
+- Recurrence: daily, weekly, monthly, yearly
+
+## ♻️ Recurring Events
+Events support recurrence:
+- Daily / Weekly / Monthly / Yearly
+- Recurrence can be set during creation or editing
+
+## 🔔 Real-Time Notifications
+Notifications triggered in real time via Firebase for:
+- Friend requests
+- Event invitations
+
+## 📇 Contacts
+Users can send and manage friend requests
+- Only friends can be invited to events
+
+## 🔍 Public Area (for non-authenticated users)
+- Public search for public events
+- Login and registration
+
+## 🔐 Private Area (for logged-in users)
+- Personal calendar with event views
+- Profile editing
+- Manage friend and event invitations
+- Accept or decline invitations
+- Access to all events the user has created or is part of
+- Logout redirects to public landing page
+
+## 🛡️ Admin Panel
+Accessible only to admin users
+
+Features include:
+- Search for users by username
+- Pagination for user and event lists
+- Clickable user/event items allow:
+  - Edit/delete events
+  - Block/unblock users
+
+## 🚀 Getting Started
+Clone the repository:
+```bash
+git clone https://github.com/Giphy-App-Team-01/event-calendar-react.git
+cd event-calendar-react
+```
+Install dependencies:
+```bash
+npm install
+```
+Create a `.env` file and add your Firebase and Cloudinary config
+
+Start the development server:
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔧 Example .env Configuration
+```ini
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_firebase_app_id
+VITE_FIREBASE_DATABASE_URL=https://your_project_id-default-rtdb.your-region.firebasedatabase.app/
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
 ```
