@@ -3,6 +3,28 @@
 ## 🧠 Description
 Event Calendar is a modern web application for planning and managing events. Designed to support both individual users and teams, it allows users to create events, invite friends, set recurring schedules, and manage their personal calendar with multiple view modes.
 
+## 📸 Screenshots
+
+### 🌐 Landing Page
+![Landing Page](./src/assets/images/LandingPage.png)
+
+### 🗓️ My Calendar
+![My Calendar](./src/assets/images/MyCalendar.png)
+
+### 👤 Profile
+![Profile Page](./src/assets/images/Profile.png)
+
+### 📇 Contacts
+![Contacts Page](./src/assets/images/Contacts.png)
+
+### ⚙️ Admin Dashboard
+![Admin Dashboard](./src/assets/images/Admin.png)
+
+### 🔍 Single Event View
+![Single Event View](./src/assets/images/SingleEventView.png)
+
+
+
 ## 🛠️ Technologies Used
 - **Frontend:** React + Vite + TypeScript
 - **UI & Styling:** TailwindCSS + DaisyUI
